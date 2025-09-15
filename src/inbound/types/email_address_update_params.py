@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Optional
 from typing_extensions import Annotated, TypedDict
 
 from .._utils import PropertyInfo
@@ -10,8 +11,8 @@ __all__ = ["EmailAddressUpdateParams"]
 
 
 class EmailAddressUpdateParams(TypedDict, total=False):
-    endpoint_id: Annotated[str, PropertyInfo(alias="endpointId")]
+    endpoint_id: Annotated[Optional[str], PropertyInfo(alias="endpointId")]
 
-    is_active: Annotated[bool, PropertyInfo(alias="isActive")]
+    is_active: Annotated[Optional[bool], PropertyInfo(alias="isActive")]
 
-    webhook_id: Annotated[str, PropertyInfo(alias="webhookId")]
+    webhook_id: Annotated[Optional[str], PropertyInfo(alias="webhookId")]

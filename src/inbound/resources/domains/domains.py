@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Optional
 from typing_extensions import Literal
 
 import httpx
@@ -14,7 +15,13 @@ from .auth import (
     AuthResourceWithStreamingResponse,
     AsyncAuthResourceWithStreamingResponse,
 )
-from ...types import domain_list_params, domain_create_params, domain_retrieve_params
+from ...types import (
+    domain_list_params,
+    domain_create_params,
+    domain_retrieve_params,
+    domain_update_catch_all_params,
+    domain_upgrade_mail_from_params,
+)
 from ..._types import NOT_GIVEN, Body, Query, Headers, NotGiven
 from ..._utils import maybe_transform, async_maybe_transform
 from ..._compat import cached_property
@@ -30,7 +37,9 @@ from ...types.domain_list_response import DomainListResponse
 from ...types.domain_create_response import DomainCreateResponse
 from ...types.domain_delete_response import DomainDeleteResponse
 from ...types.domain_retrieve_response import DomainRetrieveResponse
-from ...types.domain_list_dns_records_response import DomainListDNSRecordsResponse
+from ...types.domain_update_catch_all_response import DomainUpdateCatchAllResponse
+from ...types.domain_upgrade_mail_from_response import DomainUpgradeMailFromResponse
+from ...types.domain_retrieve_dns_records_response import DomainRetrieveDNSRecordsResponse
 
 __all__ = ["DomainsResource", "AsyncDomainsResource"]
 
@@ -46,7 +55,7 @@ class DomainsResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return DomainsResourceWithRawResponse(self)
 
@@ -55,14 +64,14 @@ class DomainsResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return DomainsResourceWithStreamingResponse(self)
 
     def create(
         self,
         *,
-        domain: str,
+        domain: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -70,8 +79,10 @@ class DomainsResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DomainCreateResponse:
-        """
-        POST /domains
+        """Add a new domain for email receiving.
+
+        Validates domain ownership and sets up DNS
+        verification records.
 
         Args:
           extra_headers: Send extra headers
@@ -83,7 +94,7 @@ class DomainsResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._post(
-            "/api/v2/domains",
+            "/v2/domains",
             body=maybe_transform({"domain": domain}, domain_create_params.DomainCreateParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
@@ -95,7 +106,7 @@ class DomainsResource(SyncAPIResource):
         self,
         path_id: str,
         *,
-        query_id: str,
+        query_id: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -104,10 +115,13 @@ class DomainsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DomainRetrieveResponse:
         """
-        GET /domains/{id}
+        Get detailed information about a specific domain including verification status,
+        statistics, and optional DNS/SES checks.
 
         Args:
-          query_id: id parameter
+          path_id: The ID of the domain
+
+          query_id: from params
 
           extra_headers: Send extra headers
 
@@ -120,7 +134,7 @@ class DomainsResource(SyncAPIResource):
         if not path_id:
             raise ValueError(f"Expected a non-empty value for `path_id` but received {path_id!r}")
         return self._get(
-            f"/api/v2/domains/{path_id}",
+            f"/v2/domains/{path_id}",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -131,47 +145,14 @@ class DomainsResource(SyncAPIResource):
             cast_to=DomainRetrieveResponse,
         )
 
-    def update(
-        self,
-        id: str,
-        *,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> object:
-        """
-        PATCH /domains/{id}
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        if not id:
-            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
-        return self._patch(
-            f"/api/v2/domains/{id}",
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=object,
-        )
-
     def list(
         self,
         *,
-        can_receive: Literal["true", "false", "undefined"] | NotGiven = NOT_GIVEN,
-        check: Literal["true", "false", "undefined"] | NotGiven = NOT_GIVEN,
+        can_receive: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        check: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         limit: float | NotGiven = NOT_GIVEN,
         offset: float | NotGiven = NOT_GIVEN,
-        status: Literal["pending", "verified", "failed", "undefined"] | NotGiven = NOT_GIVEN,
+        status: Literal["pending", "verified", "failed"] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -180,19 +161,10 @@ class DomainsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DomainListResponse:
         """
-        GET /domains
+        Retrieve all domains for the authenticated user with filtering, pagination, and
+        optional DNS/SES verification checks.
 
         Args:
-          can_receive: canReceive parameter
-
-          check: check parameter
-
-          limit: limit parameter
-
-          offset: offset parameter
-
-          status: status parameter
-
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -202,7 +174,7 @@ class DomainsResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._get(
-            "/api/v2/domains",
+            "/v2/domains",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -234,9 +206,12 @@ class DomainsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DomainDeleteResponse:
         """
-        DELETE /domains/{id}
+        Permanently delete a domain and all its associated resources (email addresses,
+        DNS records, AWS SES configuration).
 
         Args:
+          id: The ID of the domain
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -248,14 +223,14 @@ class DomainsResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._delete(
-            f"/api/v2/domains/{id}",
+            f"/v2/domains/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
             cast_to=DomainDeleteResponse,
         )
 
-    def list_dns_records(
+    def retrieve_dns_records(
         self,
         id: str,
         *,
@@ -265,11 +240,14 @@ class DomainsResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> DomainListDNSRecordsResponse:
+    ) -> DomainRetrieveDNSRecordsResponse:
         """
-        GET /domains/{id}/dns-records
+        Retrieve all DNS records associated with a domain, including verification status
+        for each record.
 
         Args:
+          id: The ID of the domain
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -281,11 +259,95 @@ class DomainsResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            f"/api/v2/domains/{id}/dns-records",
+            f"/v2/domains/{id}/dns-records",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=DomainListDNSRecordsResponse,
+            cast_to=DomainRetrieveDNSRecordsResponse,
+        )
+
+    def update_catch_all(
+        self,
+        id: str,
+        *,
+        catch_all_endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
+        is_catch_all_enabled: bool | NotGiven = NOT_GIVEN,
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
+        extra_headers: Headers | None = None,
+        extra_query: Query | None = None,
+        extra_body: Body | None = None,
+        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+    ) -> DomainUpdateCatchAllResponse:
+        """Configure catch-all email routing for a domain.
+
+        Enable or disable catch-all
+        functionality with endpoint configuration.
+
+        Args:
+          id: The ID of the domain
+
+          extra_headers: Send extra headers
+
+          extra_query: Add additional query parameters to the request
+
+          extra_body: Add additional JSON properties to the request
+
+          timeout: Override the client-level default timeout for this request, in seconds
+        """
+        if not id:
+            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
+        return self._put(
+            f"/v2/domains/{id}",
+            body=maybe_transform(
+                {
+                    "catch_all_endpoint_id": catch_all_endpoint_id,
+                    "is_catch_all_enabled": is_catch_all_enabled,
+                },
+                domain_update_catch_all_params.DomainUpdateCatchAllParams,
+            ),
+            options=make_request_options(
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+            ),
+            cast_to=DomainUpdateCatchAllResponse,
+        )
+
+    def upgrade_mail_from(
+        self,
+        id: str,
+        *,
+        body: object | NotGiven = NOT_GIVEN,
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
+        extra_headers: Headers | None = None,
+        extra_query: Query | None = None,
+        extra_body: Body | None = None,
+        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+    ) -> DomainUpgradeMailFromResponse:
+        """
+        Upgrade an existing domain with MAIL FROM domain configuration to eliminate the
+        "via amazonses.com" attribution in emails.
+
+        Args:
+          id: The ID of the domain
+
+          extra_headers: Send extra headers
+
+          extra_query: Add additional query parameters to the request
+
+          extra_body: Add additional JSON properties to the request
+
+          timeout: Override the client-level default timeout for this request, in seconds
+        """
+        if not id:
+            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
+        return self._patch(
+            f"/v2/domains/{id}",
+            body=maybe_transform(body, domain_upgrade_mail_from_params.DomainUpgradeMailFromParams),
+            options=make_request_options(
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+            ),
+            cast_to=DomainUpgradeMailFromResponse,
         )
 
 
@@ -300,7 +362,7 @@ class AsyncDomainsResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return AsyncDomainsResourceWithRawResponse(self)
 
@@ -309,14 +371,14 @@ class AsyncDomainsResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return AsyncDomainsResourceWithStreamingResponse(self)
 
     async def create(
         self,
         *,
-        domain: str,
+        domain: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -324,8 +386,10 @@ class AsyncDomainsResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DomainCreateResponse:
-        """
-        POST /domains
+        """Add a new domain for email receiving.
+
+        Validates domain ownership and sets up DNS
+        verification records.
 
         Args:
           extra_headers: Send extra headers
@@ -337,7 +401,7 @@ class AsyncDomainsResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._post(
-            "/api/v2/domains",
+            "/v2/domains",
             body=await async_maybe_transform({"domain": domain}, domain_create_params.DomainCreateParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
@@ -349,7 +413,7 @@ class AsyncDomainsResource(AsyncAPIResource):
         self,
         path_id: str,
         *,
-        query_id: str,
+        query_id: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -358,10 +422,13 @@ class AsyncDomainsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DomainRetrieveResponse:
         """
-        GET /domains/{id}
+        Get detailed information about a specific domain including verification status,
+        statistics, and optional DNS/SES checks.
 
         Args:
-          query_id: id parameter
+          path_id: The ID of the domain
+
+          query_id: from params
 
           extra_headers: Send extra headers
 
@@ -374,7 +441,7 @@ class AsyncDomainsResource(AsyncAPIResource):
         if not path_id:
             raise ValueError(f"Expected a non-empty value for `path_id` but received {path_id!r}")
         return await self._get(
-            f"/api/v2/domains/{path_id}",
+            f"/v2/domains/{path_id}",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -385,47 +452,14 @@ class AsyncDomainsResource(AsyncAPIResource):
             cast_to=DomainRetrieveResponse,
         )
 
-    async def update(
-        self,
-        id: str,
-        *,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> object:
-        """
-        PATCH /domains/{id}
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        if not id:
-            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
-        return await self._patch(
-            f"/api/v2/domains/{id}",
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=object,
-        )
-
     async def list(
         self,
         *,
-        can_receive: Literal["true", "false", "undefined"] | NotGiven = NOT_GIVEN,
-        check: Literal["true", "false", "undefined"] | NotGiven = NOT_GIVEN,
+        can_receive: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        check: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         limit: float | NotGiven = NOT_GIVEN,
         offset: float | NotGiven = NOT_GIVEN,
-        status: Literal["pending", "verified", "failed", "undefined"] | NotGiven = NOT_GIVEN,
+        status: Literal["pending", "verified", "failed"] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -434,19 +468,10 @@ class AsyncDomainsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DomainListResponse:
         """
-        GET /domains
+        Retrieve all domains for the authenticated user with filtering, pagination, and
+        optional DNS/SES verification checks.
 
         Args:
-          can_receive: canReceive parameter
-
-          check: check parameter
-
-          limit: limit parameter
-
-          offset: offset parameter
-
-          status: status parameter
-
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -456,7 +481,7 @@ class AsyncDomainsResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._get(
-            "/api/v2/domains",
+            "/v2/domains",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -488,9 +513,12 @@ class AsyncDomainsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DomainDeleteResponse:
         """
-        DELETE /domains/{id}
+        Permanently delete a domain and all its associated resources (email addresses,
+        DNS records, AWS SES configuration).
 
         Args:
+          id: The ID of the domain
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -502,14 +530,14 @@ class AsyncDomainsResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._delete(
-            f"/api/v2/domains/{id}",
+            f"/v2/domains/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
             cast_to=DomainDeleteResponse,
         )
 
-    async def list_dns_records(
+    async def retrieve_dns_records(
         self,
         id: str,
         *,
@@ -519,11 +547,14 @@ class AsyncDomainsResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> DomainListDNSRecordsResponse:
+    ) -> DomainRetrieveDNSRecordsResponse:
         """
-        GET /domains/{id}/dns-records
+        Retrieve all DNS records associated with a domain, including verification status
+        for each record.
 
         Args:
+          id: The ID of the domain
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -535,11 +566,95 @@ class AsyncDomainsResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            f"/api/v2/domains/{id}/dns-records",
+            f"/v2/domains/{id}/dns-records",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=DomainListDNSRecordsResponse,
+            cast_to=DomainRetrieveDNSRecordsResponse,
+        )
+
+    async def update_catch_all(
+        self,
+        id: str,
+        *,
+        catch_all_endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
+        is_catch_all_enabled: bool | NotGiven = NOT_GIVEN,
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
+        extra_headers: Headers | None = None,
+        extra_query: Query | None = None,
+        extra_body: Body | None = None,
+        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+    ) -> DomainUpdateCatchAllResponse:
+        """Configure catch-all email routing for a domain.
+
+        Enable or disable catch-all
+        functionality with endpoint configuration.
+
+        Args:
+          id: The ID of the domain
+
+          extra_headers: Send extra headers
+
+          extra_query: Add additional query parameters to the request
+
+          extra_body: Add additional JSON properties to the request
+
+          timeout: Override the client-level default timeout for this request, in seconds
+        """
+        if not id:
+            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
+        return await self._put(
+            f"/v2/domains/{id}",
+            body=await async_maybe_transform(
+                {
+                    "catch_all_endpoint_id": catch_all_endpoint_id,
+                    "is_catch_all_enabled": is_catch_all_enabled,
+                },
+                domain_update_catch_all_params.DomainUpdateCatchAllParams,
+            ),
+            options=make_request_options(
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+            ),
+            cast_to=DomainUpdateCatchAllResponse,
+        )
+
+    async def upgrade_mail_from(
+        self,
+        id: str,
+        *,
+        body: object | NotGiven = NOT_GIVEN,
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
+        extra_headers: Headers | None = None,
+        extra_query: Query | None = None,
+        extra_body: Body | None = None,
+        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+    ) -> DomainUpgradeMailFromResponse:
+        """
+        Upgrade an existing domain with MAIL FROM domain configuration to eliminate the
+        "via amazonses.com" attribution in emails.
+
+        Args:
+          id: The ID of the domain
+
+          extra_headers: Send extra headers
+
+          extra_query: Add additional query parameters to the request
+
+          extra_body: Add additional JSON properties to the request
+
+          timeout: Override the client-level default timeout for this request, in seconds
+        """
+        if not id:
+            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
+        return await self._patch(
+            f"/v2/domains/{id}",
+            body=await async_maybe_transform(body, domain_upgrade_mail_from_params.DomainUpgradeMailFromParams),
+            options=make_request_options(
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+            ),
+            cast_to=DomainUpgradeMailFromResponse,
         )
 
 
@@ -553,17 +668,20 @@ class DomainsResourceWithRawResponse:
         self.retrieve = to_raw_response_wrapper(
             domains.retrieve,
         )
-        self.update = to_raw_response_wrapper(
-            domains.update,
-        )
         self.list = to_raw_response_wrapper(
             domains.list,
         )
         self.delete = to_raw_response_wrapper(
             domains.delete,
         )
-        self.list_dns_records = to_raw_response_wrapper(
-            domains.list_dns_records,
+        self.retrieve_dns_records = to_raw_response_wrapper(
+            domains.retrieve_dns_records,
+        )
+        self.update_catch_all = to_raw_response_wrapper(
+            domains.update_catch_all,
+        )
+        self.upgrade_mail_from = to_raw_response_wrapper(
+            domains.upgrade_mail_from,
         )
 
     @cached_property
@@ -581,17 +699,20 @@ class AsyncDomainsResourceWithRawResponse:
         self.retrieve = async_to_raw_response_wrapper(
             domains.retrieve,
         )
-        self.update = async_to_raw_response_wrapper(
-            domains.update,
-        )
         self.list = async_to_raw_response_wrapper(
             domains.list,
         )
         self.delete = async_to_raw_response_wrapper(
             domains.delete,
         )
-        self.list_dns_records = async_to_raw_response_wrapper(
-            domains.list_dns_records,
+        self.retrieve_dns_records = async_to_raw_response_wrapper(
+            domains.retrieve_dns_records,
+        )
+        self.update_catch_all = async_to_raw_response_wrapper(
+            domains.update_catch_all,
+        )
+        self.upgrade_mail_from = async_to_raw_response_wrapper(
+            domains.upgrade_mail_from,
         )
 
     @cached_property
@@ -609,17 +730,20 @@ class DomainsResourceWithStreamingResponse:
         self.retrieve = to_streamed_response_wrapper(
             domains.retrieve,
         )
-        self.update = to_streamed_response_wrapper(
-            domains.update,
-        )
         self.list = to_streamed_response_wrapper(
             domains.list,
         )
         self.delete = to_streamed_response_wrapper(
             domains.delete,
         )
-        self.list_dns_records = to_streamed_response_wrapper(
-            domains.list_dns_records,
+        self.retrieve_dns_records = to_streamed_response_wrapper(
+            domains.retrieve_dns_records,
+        )
+        self.update_catch_all = to_streamed_response_wrapper(
+            domains.update_catch_all,
+        )
+        self.upgrade_mail_from = to_streamed_response_wrapper(
+            domains.upgrade_mail_from,
         )
 
     @cached_property
@@ -637,17 +761,20 @@ class AsyncDomainsResourceWithStreamingResponse:
         self.retrieve = async_to_streamed_response_wrapper(
             domains.retrieve,
         )
-        self.update = async_to_streamed_response_wrapper(
-            domains.update,
-        )
         self.list = async_to_streamed_response_wrapper(
             domains.list,
         )
         self.delete = async_to_streamed_response_wrapper(
             domains.delete,
         )
-        self.list_dns_records = async_to_streamed_response_wrapper(
-            domains.list_dns_records,
+        self.retrieve_dns_records = async_to_streamed_response_wrapper(
+            domains.retrieve_dns_records,
+        )
+        self.update_catch_all = async_to_streamed_response_wrapper(
+            domains.update_catch_all,
+        )
+        self.upgrade_mail_from = async_to_streamed_response_wrapper(
+            domains.upgrade_mail_from,
         )
 
     @cached_property

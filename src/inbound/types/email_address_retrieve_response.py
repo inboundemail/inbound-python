@@ -1,35 +1,59 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
+from typing import Optional
+from datetime import datetime
+from typing_extensions import Literal
+
 from pydantic import Field as FieldInfo
 
 from .._models import BaseModel
 
-__all__ = ["EmailAddressRetrieveResponse"]
+__all__ = ["EmailAddressRetrieveResponse", "Domain", "Routing"]
+
+
+class Domain(BaseModel):
+    id: Optional[str] = None
+
+    name: Optional[str] = None
+
+    status: Optional[str] = None
+
+
+class Routing(BaseModel):
+    id: Optional[str] = None
+
+    config: Optional[object] = None
+
+    is_active: Optional[bool] = FieldInfo(alias="isActive", default=None)
+
+    name: Optional[str] = None
+
+    type: Optional[Literal["webhook", "endpoint", "none"]] = None
 
 
 class EmailAddressRetrieveResponse(BaseModel):
-    id: str
+    id: Optional[str] = None
 
-    address: str
+    address: Optional[str] = None
 
-    created_at: str = FieldInfo(alias="createdAt")
+    created_at: Optional[datetime] = FieldInfo(alias="createdAt", default=None)
 
-    domain: str
+    domain: Optional[Domain] = None
 
-    domain_id: str = FieldInfo(alias="domainId")
+    domain_id: Optional[str] = FieldInfo(alias="domainId", default=None)
 
-    endpoint_id: str = FieldInfo(alias="endpointId")
+    endpoint_id: Optional[str] = FieldInfo(alias="endpointId", default=None)
 
-    is_active: bool = FieldInfo(alias="isActive")
+    is_active: Optional[bool] = FieldInfo(alias="isActive", default=None)
 
-    is_receipt_rule_configured: bool = FieldInfo(alias="isReceiptRuleConfigured")
+    is_receipt_rule_configured: Optional[bool] = FieldInfo(alias="isReceiptRuleConfigured", default=None)
 
-    receipt_rule_name: str = FieldInfo(alias="receiptRuleName")
+    receipt_rule_name: Optional[str] = FieldInfo(alias="receiptRuleName", default=None)
 
-    routing: str
+    routing: Optional[Routing] = None
 
-    updated_at: str = FieldInfo(alias="updatedAt")
+    updated_at: Optional[datetime] = FieldInfo(alias="updatedAt", default=None)
 
-    user_id: str = FieldInfo(alias="userId")
+    user_id: Optional[str] = FieldInfo(alias="userId", default=None)
 
-    webhook_id: str = FieldInfo(alias="webhookId")
+    webhook_id: Optional[str] = FieldInfo(alias="webhookId", default=None)

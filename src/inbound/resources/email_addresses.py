@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Optional
 from typing_extensions import Literal
 
 import httpx
@@ -34,7 +35,7 @@ class EmailAddressesResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return EmailAddressesResourceWithRawResponse(self)
 
@@ -43,18 +44,18 @@ class EmailAddressesResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return EmailAddressesResourceWithStreamingResponse(self)
 
     def create(
         self,
         *,
-        address: str,
-        domain_id: str,
-        endpoint_id: str | NotGiven = NOT_GIVEN,
-        is_active: bool | NotGiven = NOT_GIVEN,
-        webhook_id: str | NotGiven = NOT_GIVEN,
+        address: str | NotGiven = NOT_GIVEN,
+        domain_id: str | NotGiven = NOT_GIVEN,
+        endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
+        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
+        webhook_id: Optional[str] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -63,7 +64,8 @@ class EmailAddressesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressCreateResponse:
         """
-        POST /email-addresses
+        Create a new email address for receiving emails and configure AWS SES receipt
+        rules automatically.
 
         Args:
           extra_headers: Send extra headers
@@ -75,7 +77,7 @@ class EmailAddressesResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._post(
-            "/api/v2/email-addresses",
+            "/v2/email-addresses",
             body=maybe_transform(
                 {
                     "address": address,
@@ -104,9 +106,12 @@ class EmailAddressesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressRetrieveResponse:
         """
-        GET /email-addresses/{id}
+        Get detailed information about a specific email address including domain and
+        routing configuration.
 
         Args:
+          id: The ID of the email address
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -118,7 +123,7 @@ class EmailAddressesResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            f"/api/v2/email-addresses/{id}",
+            f"/v2/email-addresses/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -129,9 +134,9 @@ class EmailAddressesResource(SyncAPIResource):
         self,
         id: str,
         *,
-        endpoint_id: str | NotGiven = NOT_GIVEN,
-        is_active: bool | NotGiven = NOT_GIVEN,
-        webhook_id: str | NotGiven = NOT_GIVEN,
+        endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
+        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
+        webhook_id: Optional[str] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -140,9 +145,12 @@ class EmailAddressesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressUpdateResponse:
         """
-        PUT /email-addresses/{id}
+        Update an email address's routing configuration (endpoint, webhook, or disable
+        routing).
 
         Args:
+          id: The ID of the email address
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -154,7 +162,7 @@ class EmailAddressesResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._put(
-            f"/api/v2/email-addresses/{id}",
+            f"/v2/email-addresses/{id}",
             body=maybe_transform(
                 {
                     "endpoint_id": endpoint_id,
@@ -173,8 +181,8 @@ class EmailAddressesResource(SyncAPIResource):
         self,
         *,
         domain_id: str | NotGiven = NOT_GIVEN,
-        is_active: Literal["true", "false", "undefined"] | NotGiven = NOT_GIVEN,
-        is_receipt_rule_configured: Literal["true", "false", "undefined"] | NotGiven = NOT_GIVEN,
+        is_active: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        is_receipt_rule_configured: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         limit: float | NotGiven = NOT_GIVEN,
         offset: float | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
@@ -185,19 +193,10 @@ class EmailAddressesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressListResponse:
         """
-        GET /email-addresses
+        Retrieve all email addresses for the authenticated user with filtering and
+        pagination options.
 
         Args:
-          domain_id: domainId parameter
-
-          is_active: isActive parameter
-
-          is_receipt_rule_configured: isReceiptRuleConfigured parameter
-
-          limit: limit parameter
-
-          offset: offset parameter
-
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -207,7 +206,7 @@ class EmailAddressesResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._get(
-            "/api/v2/email-addresses",
+            "/v2/email-addresses",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -239,9 +238,12 @@ class EmailAddressesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressDeleteResponse:
         """
-        DELETE /email-addresses/{id}
+        Permanently delete an email address and update AWS SES receipt rules
+        accordingly.
 
         Args:
+          id: The ID of the email address
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -253,7 +255,7 @@ class EmailAddressesResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._delete(
-            f"/api/v2/email-addresses/{id}",
+            f"/v2/email-addresses/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -268,7 +270,7 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return AsyncEmailAddressesResourceWithRawResponse(self)
 
@@ -277,18 +279,18 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return AsyncEmailAddressesResourceWithStreamingResponse(self)
 
     async def create(
         self,
         *,
-        address: str,
-        domain_id: str,
-        endpoint_id: str | NotGiven = NOT_GIVEN,
-        is_active: bool | NotGiven = NOT_GIVEN,
-        webhook_id: str | NotGiven = NOT_GIVEN,
+        address: str | NotGiven = NOT_GIVEN,
+        domain_id: str | NotGiven = NOT_GIVEN,
+        endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
+        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
+        webhook_id: Optional[str] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -297,7 +299,8 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressCreateResponse:
         """
-        POST /email-addresses
+        Create a new email address for receiving emails and configure AWS SES receipt
+        rules automatically.
 
         Args:
           extra_headers: Send extra headers
@@ -309,7 +312,7 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._post(
-            "/api/v2/email-addresses",
+            "/v2/email-addresses",
             body=await async_maybe_transform(
                 {
                     "address": address,
@@ -338,9 +341,12 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressRetrieveResponse:
         """
-        GET /email-addresses/{id}
+        Get detailed information about a specific email address including domain and
+        routing configuration.
 
         Args:
+          id: The ID of the email address
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -352,7 +358,7 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            f"/api/v2/email-addresses/{id}",
+            f"/v2/email-addresses/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -363,9 +369,9 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        endpoint_id: str | NotGiven = NOT_GIVEN,
-        is_active: bool | NotGiven = NOT_GIVEN,
-        webhook_id: str | NotGiven = NOT_GIVEN,
+        endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
+        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
+        webhook_id: Optional[str] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -374,9 +380,12 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressUpdateResponse:
         """
-        PUT /email-addresses/{id}
+        Update an email address's routing configuration (endpoint, webhook, or disable
+        routing).
 
         Args:
+          id: The ID of the email address
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -388,7 +397,7 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._put(
-            f"/api/v2/email-addresses/{id}",
+            f"/v2/email-addresses/{id}",
             body=await async_maybe_transform(
                 {
                     "endpoint_id": endpoint_id,
@@ -407,8 +416,8 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         self,
         *,
         domain_id: str | NotGiven = NOT_GIVEN,
-        is_active: Literal["true", "false", "undefined"] | NotGiven = NOT_GIVEN,
-        is_receipt_rule_configured: Literal["true", "false", "undefined"] | NotGiven = NOT_GIVEN,
+        is_active: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        is_receipt_rule_configured: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         limit: float | NotGiven = NOT_GIVEN,
         offset: float | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
@@ -419,19 +428,10 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressListResponse:
         """
-        GET /email-addresses
+        Retrieve all email addresses for the authenticated user with filtering and
+        pagination options.
 
         Args:
-          domain_id: domainId parameter
-
-          is_active: isActive parameter
-
-          is_receipt_rule_configured: isReceiptRuleConfigured parameter
-
-          limit: limit parameter
-
-          offset: offset parameter
-
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -441,7 +441,7 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._get(
-            "/api/v2/email-addresses",
+            "/v2/email-addresses",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -473,9 +473,12 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailAddressDeleteResponse:
         """
-        DELETE /email-addresses/{id}
+        Permanently delete an email address and update AWS SES receipt rules
+        accordingly.
 
         Args:
+          id: The ID of the email address
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -487,7 +490,7 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._delete(
-            f"/api/v2/email-addresses/{id}",
+            f"/v2/email-addresses/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),

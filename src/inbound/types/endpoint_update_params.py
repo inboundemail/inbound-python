@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing_extensions import Literal, Required, Annotated, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, TypedDict
 
 from .._utils import PropertyInfo
 
@@ -10,14 +11,13 @@ __all__ = ["EndpointUpdateParams"]
 
 
 class EndpointUpdateParams(TypedDict, total=False):
-    body_id: Required[Annotated[str, PropertyInfo(alias="id")]]
+    body_id: Annotated[str, PropertyInfo(alias="id")]
+    """from params"""
 
-    config: Literal[
-        "import(/Users/ryanvogel/dev/inbound-org/inbound/features/endpoints/types/index).EndpointConfig", "undefined"
-    ]
+    config: object
 
-    description: str
+    description: Optional[str]
 
-    is_active: Annotated[bool, PropertyInfo(alias="isActive")]
+    is_active: Annotated[Optional[bool], PropertyInfo(alias="isActive")]
 
-    name: str
+    name: Optional[str]

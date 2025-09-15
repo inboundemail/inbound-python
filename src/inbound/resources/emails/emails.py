@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from typing import Dict, Union, Iterable, Optional
+
 import httpx
 
-from ...types import email_reply_params, email_create_params
+from ...types import email_send_params, email_reply_params
 from ..._types import NOT_GIVEN, Body, Query, Headers, NotGiven, SequenceNotStr
 from ..._utils import maybe_transform, async_maybe_transform
 from .schedule import (
@@ -24,8 +26,8 @@ from ..._response import (
     async_to_streamed_response_wrapper,
 )
 from ..._base_client import make_request_options
+from ...types.email_send_response import EmailSendResponse
 from ...types.email_reply_response import EmailReplyResponse
-from ...types.email_create_response import EmailCreateResponse
 from ...types.email_retrieve_response import EmailRetrieveResponse
 
 __all__ = ["EmailsResource", "AsyncEmailsResource"]
@@ -42,7 +44,7 @@ class EmailsResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return EmailsResourceWithRawResponse(self)
 
@@ -51,68 +53,9 @@ class EmailsResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return EmailsResourceWithStreamingResponse(self)
-
-    def create(
-        self,
-        *,
-        from_: str,
-        subject: str,
-        to: str,
-        attachments: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
-        bcc: str | NotGiven = NOT_GIVEN,
-        cc: str | NotGiven = NOT_GIVEN,
-        headers: str | NotGiven = NOT_GIVEN,
-        html: str | NotGiven = NOT_GIVEN,
-        body_reply_to_1: str | NotGiven = NOT_GIVEN,
-        body_reply_to_2: str | NotGiven = NOT_GIVEN,
-        tags: str | NotGiven = NOT_GIVEN,
-        text: str | NotGiven = NOT_GIVEN,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> EmailCreateResponse:
-        """
-        POST /emails
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        return self._post(
-            "/api/v2/emails",
-            body=maybe_transform(
-                {
-                    "from_": from_,
-                    "subject": subject,
-                    "to": to,
-                    "attachments": attachments,
-                    "bcc": bcc,
-                    "cc": cc,
-                    "headers": headers,
-                    "html": html,
-                    "body_reply_to_1": body_reply_to_1,
-                    "body_reply_to_2": body_reply_to_2,
-                    "tags": tags,
-                    "text": text,
-                },
-                email_create_params.EmailCreateParams,
-            ),
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=EmailCreateResponse,
-        )
 
     def retrieve(
         self,
@@ -125,10 +68,14 @@ class EmailsResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailRetrieveResponse:
-        """
-        GET /emails/{id}
+        """Retrieve details of a specific sent email by its ID.
+
+        Compatible with Resend API
+        format.
 
         Args:
+          id: The ID of the email to get the thread for
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -140,7 +87,7 @@ class EmailsResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            f"/api/v2/emails/{id}",
+            f"/v2/emails/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -151,22 +98,22 @@ class EmailsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        from_: str,
-        attachments: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
-        bcc: str | NotGiven = NOT_GIVEN,
-        cc: str | NotGiven = NOT_GIVEN,
-        from_name: str | NotGiven = NOT_GIVEN,
-        headers: str | NotGiven = NOT_GIVEN,
-        html: str | NotGiven = NOT_GIVEN,
-        body_include_original_1: bool | NotGiven = NOT_GIVEN,
-        body_include_original_2: bool | NotGiven = NOT_GIVEN,
-        body_reply_to_1: str | NotGiven = NOT_GIVEN,
-        body_reply_to_2: str | NotGiven = NOT_GIVEN,
-        simple: bool | NotGiven = NOT_GIVEN,
-        subject: str | NotGiven = NOT_GIVEN,
-        tags: str | NotGiven = NOT_GIVEN,
-        text: str | NotGiven = NOT_GIVEN,
-        to: str | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[email_reply_params.Attachment]] | NotGiven = NOT_GIVEN,
+        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        from_: str | NotGiven = NOT_GIVEN,
+        from_name: Optional[str] | NotGiven = NOT_GIVEN,
+        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
+        html: Optional[str] | NotGiven = NOT_GIVEN,
+        body_include_original_1: Optional[bool] | NotGiven = NOT_GIVEN,
+        body_include_original_2: Optional[bool] | NotGiven = NOT_GIVEN,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        simple: Optional[bool] | NotGiven = NOT_GIVEN,
+        subject: Optional[str] | NotGiven = NOT_GIVEN,
+        tags: Optional[Iterable[email_reply_params.Tag]] | NotGiven = NOT_GIVEN,
+        text: Optional[str] | NotGiven = NOT_GIVEN,
+        to: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -174,10 +121,30 @@ class EmailsResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailReplyResponse:
-        """
-        POST /emails/{id}/reply
+        """Reply to an inbound email with proper threading support.
+
+        Supports both simple
+        mode (faster) and full mode (with attachments and original message quoting).
 
         Args:
+          id: The ID of the email to get the thread for
+
+          from_name: Optional sender name for display
+
+          body_include_original_1: snake_case (legacy)
+
+          body_include_original_2: camelCase (Resend-compatible)
+
+          body_reply_to_1: snake_case (legacy)
+
+          body_reply_to_2: camelCase (Resend-compatible)
+
+          simple: Use simplified reply mode (faster, lighter)
+
+          subject: Optional - will add "Re: " to original subject if not provided
+
+          to: Optional - will use original sender if not provided
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -189,13 +156,13 @@ class EmailsResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/api/v2/emails/{id}/reply",
+            f"/v2/emails/{id}/reply",
             body=maybe_transform(
                 {
-                    "from_": from_,
                     "attachments": attachments,
                     "bcc": bcc,
                     "cc": cc,
+                    "from_": from_,
                     "from_name": from_name,
                     "headers": headers,
                     "html": html,
@@ -215,6 +182,75 @@ class EmailsResource(SyncAPIResource):
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
             cast_to=EmailReplyResponse,
+        )
+
+    def send(
+        self,
+        *,
+        attachments: Optional[Iterable[email_send_params.Attachment]] | NotGiven = NOT_GIVEN,
+        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        from_: str | NotGiven = NOT_GIVEN,
+        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
+        html: Optional[str] | NotGiven = NOT_GIVEN,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        subject: str | NotGiven = NOT_GIVEN,
+        tags: Optional[Iterable[email_send_params.Tag]] | NotGiven = NOT_GIVEN,
+        text: Optional[str] | NotGiven = NOT_GIVEN,
+        to: Union[str, SequenceNotStr[str]] | NotGiven = NOT_GIVEN,
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
+        extra_headers: Headers | None = None,
+        extra_query: Query | None = None,
+        extra_body: Body | None = None,
+        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+    ) -> EmailSendResponse:
+        """Send a single email through the Inbound API.
+
+        Supports both simple text/HTML
+        emails and emails with attachments. Compatible with Resend API format for easy
+        migration.
+
+        Args:
+          from_: Now supports both "email@domain.com" and "Display Name <email@domain.com>"
+              formats
+
+          body_reply_to_1: snake_case (legacy)
+
+          body_reply_to_2: camelCase (Resend-compatible)
+
+          extra_headers: Send extra headers
+
+          extra_query: Add additional query parameters to the request
+
+          extra_body: Add additional JSON properties to the request
+
+          timeout: Override the client-level default timeout for this request, in seconds
+        """
+        return self._post(
+            "/v2/emails",
+            body=maybe_transform(
+                {
+                    "attachments": attachments,
+                    "bcc": bcc,
+                    "cc": cc,
+                    "from_": from_,
+                    "headers": headers,
+                    "html": html,
+                    "body_reply_to_1": body_reply_to_1,
+                    "body_reply_to_2": body_reply_to_2,
+                    "subject": subject,
+                    "tags": tags,
+                    "text": text,
+                    "to": to,
+                },
+                email_send_params.EmailSendParams,
+            ),
+            options=make_request_options(
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+            ),
+            cast_to=EmailSendResponse,
         )
 
 
@@ -229,7 +265,7 @@ class AsyncEmailsResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return AsyncEmailsResourceWithRawResponse(self)
 
@@ -238,68 +274,9 @@ class AsyncEmailsResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return AsyncEmailsResourceWithStreamingResponse(self)
-
-    async def create(
-        self,
-        *,
-        from_: str,
-        subject: str,
-        to: str,
-        attachments: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
-        bcc: str | NotGiven = NOT_GIVEN,
-        cc: str | NotGiven = NOT_GIVEN,
-        headers: str | NotGiven = NOT_GIVEN,
-        html: str | NotGiven = NOT_GIVEN,
-        body_reply_to_1: str | NotGiven = NOT_GIVEN,
-        body_reply_to_2: str | NotGiven = NOT_GIVEN,
-        tags: str | NotGiven = NOT_GIVEN,
-        text: str | NotGiven = NOT_GIVEN,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> EmailCreateResponse:
-        """
-        POST /emails
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        return await self._post(
-            "/api/v2/emails",
-            body=await async_maybe_transform(
-                {
-                    "from_": from_,
-                    "subject": subject,
-                    "to": to,
-                    "attachments": attachments,
-                    "bcc": bcc,
-                    "cc": cc,
-                    "headers": headers,
-                    "html": html,
-                    "body_reply_to_1": body_reply_to_1,
-                    "body_reply_to_2": body_reply_to_2,
-                    "tags": tags,
-                    "text": text,
-                },
-                email_create_params.EmailCreateParams,
-            ),
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=EmailCreateResponse,
-        )
 
     async def retrieve(
         self,
@@ -312,10 +289,14 @@ class AsyncEmailsResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailRetrieveResponse:
-        """
-        GET /emails/{id}
+        """Retrieve details of a specific sent email by its ID.
+
+        Compatible with Resend API
+        format.
 
         Args:
+          id: The ID of the email to get the thread for
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -327,7 +308,7 @@ class AsyncEmailsResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            f"/api/v2/emails/{id}",
+            f"/v2/emails/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -338,22 +319,22 @@ class AsyncEmailsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        from_: str,
-        attachments: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
-        bcc: str | NotGiven = NOT_GIVEN,
-        cc: str | NotGiven = NOT_GIVEN,
-        from_name: str | NotGiven = NOT_GIVEN,
-        headers: str | NotGiven = NOT_GIVEN,
-        html: str | NotGiven = NOT_GIVEN,
-        body_include_original_1: bool | NotGiven = NOT_GIVEN,
-        body_include_original_2: bool | NotGiven = NOT_GIVEN,
-        body_reply_to_1: str | NotGiven = NOT_GIVEN,
-        body_reply_to_2: str | NotGiven = NOT_GIVEN,
-        simple: bool | NotGiven = NOT_GIVEN,
-        subject: str | NotGiven = NOT_GIVEN,
-        tags: str | NotGiven = NOT_GIVEN,
-        text: str | NotGiven = NOT_GIVEN,
-        to: str | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[email_reply_params.Attachment]] | NotGiven = NOT_GIVEN,
+        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        from_: str | NotGiven = NOT_GIVEN,
+        from_name: Optional[str] | NotGiven = NOT_GIVEN,
+        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
+        html: Optional[str] | NotGiven = NOT_GIVEN,
+        body_include_original_1: Optional[bool] | NotGiven = NOT_GIVEN,
+        body_include_original_2: Optional[bool] | NotGiven = NOT_GIVEN,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        simple: Optional[bool] | NotGiven = NOT_GIVEN,
+        subject: Optional[str] | NotGiven = NOT_GIVEN,
+        tags: Optional[Iterable[email_reply_params.Tag]] | NotGiven = NOT_GIVEN,
+        text: Optional[str] | NotGiven = NOT_GIVEN,
+        to: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -361,10 +342,30 @@ class AsyncEmailsResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> EmailReplyResponse:
-        """
-        POST /emails/{id}/reply
+        """Reply to an inbound email with proper threading support.
+
+        Supports both simple
+        mode (faster) and full mode (with attachments and original message quoting).
 
         Args:
+          id: The ID of the email to get the thread for
+
+          from_name: Optional sender name for display
+
+          body_include_original_1: snake_case (legacy)
+
+          body_include_original_2: camelCase (Resend-compatible)
+
+          body_reply_to_1: snake_case (legacy)
+
+          body_reply_to_2: camelCase (Resend-compatible)
+
+          simple: Use simplified reply mode (faster, lighter)
+
+          subject: Optional - will add "Re: " to original subject if not provided
+
+          to: Optional - will use original sender if not provided
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -376,13 +377,13 @@ class AsyncEmailsResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/api/v2/emails/{id}/reply",
+            f"/v2/emails/{id}/reply",
             body=await async_maybe_transform(
                 {
-                    "from_": from_,
                     "attachments": attachments,
                     "bcc": bcc,
                     "cc": cc,
+                    "from_": from_,
                     "from_name": from_name,
                     "headers": headers,
                     "html": html,
@@ -404,19 +405,88 @@ class AsyncEmailsResource(AsyncAPIResource):
             cast_to=EmailReplyResponse,
         )
 
+    async def send(
+        self,
+        *,
+        attachments: Optional[Iterable[email_send_params.Attachment]] | NotGiven = NOT_GIVEN,
+        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        from_: str | NotGiven = NOT_GIVEN,
+        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
+        html: Optional[str] | NotGiven = NOT_GIVEN,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        subject: str | NotGiven = NOT_GIVEN,
+        tags: Optional[Iterable[email_send_params.Tag]] | NotGiven = NOT_GIVEN,
+        text: Optional[str] | NotGiven = NOT_GIVEN,
+        to: Union[str, SequenceNotStr[str]] | NotGiven = NOT_GIVEN,
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
+        extra_headers: Headers | None = None,
+        extra_query: Query | None = None,
+        extra_body: Body | None = None,
+        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+    ) -> EmailSendResponse:
+        """Send a single email through the Inbound API.
+
+        Supports both simple text/HTML
+        emails and emails with attachments. Compatible with Resend API format for easy
+        migration.
+
+        Args:
+          from_: Now supports both "email@domain.com" and "Display Name <email@domain.com>"
+              formats
+
+          body_reply_to_1: snake_case (legacy)
+
+          body_reply_to_2: camelCase (Resend-compatible)
+
+          extra_headers: Send extra headers
+
+          extra_query: Add additional query parameters to the request
+
+          extra_body: Add additional JSON properties to the request
+
+          timeout: Override the client-level default timeout for this request, in seconds
+        """
+        return await self._post(
+            "/v2/emails",
+            body=await async_maybe_transform(
+                {
+                    "attachments": attachments,
+                    "bcc": bcc,
+                    "cc": cc,
+                    "from_": from_,
+                    "headers": headers,
+                    "html": html,
+                    "body_reply_to_1": body_reply_to_1,
+                    "body_reply_to_2": body_reply_to_2,
+                    "subject": subject,
+                    "tags": tags,
+                    "text": text,
+                    "to": to,
+                },
+                email_send_params.EmailSendParams,
+            ),
+            options=make_request_options(
+                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+            ),
+            cast_to=EmailSendResponse,
+        )
+
 
 class EmailsResourceWithRawResponse:
     def __init__(self, emails: EmailsResource) -> None:
         self._emails = emails
 
-        self.create = to_raw_response_wrapper(
-            emails.create,
-        )
         self.retrieve = to_raw_response_wrapper(
             emails.retrieve,
         )
         self.reply = to_raw_response_wrapper(
             emails.reply,
+        )
+        self.send = to_raw_response_wrapper(
+            emails.send,
         )
 
     @cached_property
@@ -428,14 +498,14 @@ class AsyncEmailsResourceWithRawResponse:
     def __init__(self, emails: AsyncEmailsResource) -> None:
         self._emails = emails
 
-        self.create = async_to_raw_response_wrapper(
-            emails.create,
-        )
         self.retrieve = async_to_raw_response_wrapper(
             emails.retrieve,
         )
         self.reply = async_to_raw_response_wrapper(
             emails.reply,
+        )
+        self.send = async_to_raw_response_wrapper(
+            emails.send,
         )
 
     @cached_property
@@ -447,14 +517,14 @@ class EmailsResourceWithStreamingResponse:
     def __init__(self, emails: EmailsResource) -> None:
         self._emails = emails
 
-        self.create = to_streamed_response_wrapper(
-            emails.create,
-        )
         self.retrieve = to_streamed_response_wrapper(
             emails.retrieve,
         )
         self.reply = to_streamed_response_wrapper(
             emails.reply,
+        )
+        self.send = to_streamed_response_wrapper(
+            emails.send,
         )
 
     @cached_property
@@ -466,14 +536,14 @@ class AsyncEmailsResourceWithStreamingResponse:
     def __init__(self, emails: AsyncEmailsResource) -> None:
         self._emails = emails
 
-        self.create = async_to_streamed_response_wrapper(
-            emails.create,
-        )
         self.retrieve = async_to_streamed_response_wrapper(
             emails.retrieve,
         )
         self.reply = async_to_streamed_response_wrapper(
             emails.reply,
+        )
+        self.send = async_to_streamed_response_wrapper(
+            emails.send,
         )
 
     @cached_property

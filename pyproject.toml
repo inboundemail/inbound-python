@@ -1,9 +1,9 @@
 [project]
-name = "inboundemail"
+name = "inbound"
 version = "0.0.1"
 description = "The official Python library for the inbound API"
 dynamic = ["readme"]
-license = "MIT"
+license = "Apache-2.0"
 authors = [
 { name = "Inbound", email = "support@inbound.new" },
 ]
@@ -31,12 +31,12 @@ classifiers = [
   "Operating System :: POSIX :: Linux",
   "Operating System :: Microsoft :: Windows",
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "License :: OSI Approved :: MIT License"
+  "License :: OSI Approved :: Apache Software License"
 ]
 
 [project.urls]
-Homepage = "https://github.com/inboundemail/inbound-python"
-Repository = "https://github.com/inboundemail/inbound-python"
+Homepage = "https://github.com/stainless-sdks/inbound-python"
+Repository = "https://github.com/stainless-sdks/inbound-python"
 
 [project.optional-dependencies]
 aiohttp = ["aiohttp", "httpx_aiohttp>=0.1.8"]
@@ -124,7 +124,7 @@ path = "README.md"
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
 # replace relative links with absolute links
 pattern = '\[(.+?)\]\(((?!https?://)\S+?)\)'
-replacement = '[\1](https://github.com/inboundemail/inbound-python/tree/main/\g<2>)'
+replacement = '[\1](https://github.com/stainless-sdks/inbound-python/tree/main/\g<2>)'
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

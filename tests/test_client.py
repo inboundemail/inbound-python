@@ -344,7 +344,7 @@ class TestInbound:
 
         with pytest.raises(
             TypeError,
-            match="Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted",
+            match="Could not resolve authentication method. Expected either api_key or bearer_token to be set. Or for one of the `Authorization` or `Authorization` headers to be explicitly omitted",
         ):
             client2._build_request(FinalRequestOptions(method="get", url="/foo"))
 
@@ -573,7 +573,7 @@ class TestInbound:
                 Inbound(api_key=api_key, _strict_response_validation=True, environment="production")
 
             client = Inbound(base_url=None, api_key=api_key, _strict_response_validation=True, environment="production")
-            assert str(client.base_url).startswith("https://inbound.new")
+            assert str(client.base_url).startswith("https://inbound.new/api/v2")
 
     @pytest.mark.parametrize(
         "client",
@@ -729,7 +729,7 @@ class TestInbound:
     @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter, client: Inbound) -> None:
-        respx_mock.get("/api/v2/domains").mock(side_effect=httpx.TimeoutException("Test timeout error"))
+        respx_mock.get("/v2/domains").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
             client.domains.with_streaming_response.list().__enter__()
@@ -739,7 +739,7 @@ class TestInbound:
     @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, client: Inbound) -> None:
-        respx_mock.get("/api/v2/domains").mock(return_value=httpx.Response(500))
+        respx_mock.get("/v2/domains").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
             client.domains.with_streaming_response.list().__enter__()
@@ -769,7 +769,7 @@ class TestInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
 
         response = client.domains.with_raw_response.list()
 
@@ -793,7 +793,7 @@ class TestInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
 
         response = client.domains.with_raw_response.list(extra_headers={"x-stainless-retry-count": Omit()})
 
@@ -816,7 +816,7 @@ class TestInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
 
         response = client.domains.with_raw_response.list(extra_headers={"x-stainless-retry-count": "42"})
 
@@ -1162,7 +1162,7 @@ class TestAsyncInbound:
 
         with pytest.raises(
             TypeError,
-            match="Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted",
+            match="Could not resolve authentication method. Expected either api_key or bearer_token to be set. Or for one of the `Authorization` or `Authorization` headers to be explicitly omitted",
         ):
             client2._build_request(FinalRequestOptions(method="get", url="/foo"))
 
@@ -1395,7 +1395,7 @@ class TestAsyncInbound:
             client = AsyncInbound(
                 base_url=None, api_key=api_key, _strict_response_validation=True, environment="production"
             )
-            assert str(client.base_url).startswith("https://inbound.new")
+            assert str(client.base_url).startswith("https://inbound.new/api/v2")
 
     @pytest.mark.parametrize(
         "client",
@@ -1565,7 +1565,7 @@ class TestAsyncInbound:
     async def test_retrying_timeout_errors_doesnt_leak(
         self, respx_mock: MockRouter, async_client: AsyncInbound
     ) -> None:
-        respx_mock.get("/api/v2/domains").mock(side_effect=httpx.TimeoutException("Test timeout error"))
+        respx_mock.get("/v2/domains").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
             await async_client.domains.with_streaming_response.list().__aenter__()
@@ -1575,7 +1575,7 @@ class TestAsyncInbound:
     @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, async_client: AsyncInbound) -> None:
-        respx_mock.get("/api/v2/domains").mock(return_value=httpx.Response(500))
+        respx_mock.get("/v2/domains").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
             await async_client.domains.with_streaming_response.list().__aenter__()
@@ -1606,7 +1606,7 @@ class TestAsyncInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
 
         response = await client.domains.with_raw_response.list()
 
@@ -1631,7 +1631,7 @@ class TestAsyncInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
 
         response = await client.domains.with_raw_response.list(extra_headers={"x-stainless-retry-count": Omit()})
 
@@ -1655,7 +1655,7 @@ class TestAsyncInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
 
         response = await client.domains.with_raw_response.list(extra_headers={"x-stainless-retry-count": "42"})
 

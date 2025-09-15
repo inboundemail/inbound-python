@@ -32,6 +32,14 @@ from .endpoints import (
     EndpointsResourceWithStreamingResponse,
     AsyncEndpointsResourceWithStreamingResponse,
 )
+from .onboarding import (
+    OnboardingResource,
+    AsyncOnboardingResource,
+    OnboardingResourceWithRawResponse,
+    AsyncOnboardingResourceWithRawResponse,
+    OnboardingResourceWithStreamingResponse,
+    AsyncOnboardingResourceWithStreamingResponse,
+)
 from .email_addresses import (
     EmailAddressesResource,
     AsyncEmailAddressesResource,
@@ -72,4 +80,10 @@ __all__ = [
     "AsyncMailResourceWithRawResponse",
     "MailResourceWithStreamingResponse",
     "AsyncMailResourceWithStreamingResponse",
+    "OnboardingResource",
+    "AsyncOnboardingResource",
+    "OnboardingResourceWithRawResponse",
+    "AsyncOnboardingResourceWithRawResponse",
+    "OnboardingResourceWithStreamingResponse",
+    "AsyncOnboardingResourceWithStreamingResponse",
 ]

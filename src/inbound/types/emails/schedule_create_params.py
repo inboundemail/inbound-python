@@ -2,39 +2,71 @@
 
 from __future__ import annotations
 
-from typing_extensions import Required, Annotated, TypedDict
+from typing import Dict, Union, Iterable, Optional
+from typing_extensions import Annotated, TypedDict
 
 from ..._types import SequenceNotStr
 from ..._utils import PropertyInfo
 
-__all__ = ["ScheduleCreateParams"]
+__all__ = ["ScheduleCreateParams", "Attachment", "Tag"]
 
 
 class ScheduleCreateParams(TypedDict, total=False):
-    from_: Required[Annotated[str, PropertyInfo(alias="from")]]
+    attachments: Optional[Iterable[Attachment]]
 
-    scheduled_at: Required[str]
+    bcc: Union[str, SequenceNotStr[str], None]
 
-    subject: Required[str]
+    cc: Union[str, SequenceNotStr[str], None]
 
-    to: Required[str]
+    from_: Annotated[str, PropertyInfo(alias="from")]
+    """Supports both "email@domain.com" and "Display Name <email@domain.com>" formats"""
 
-    attachments: SequenceNotStr[str]
+    headers: Optional[Dict[str, str]]
 
-    bcc: str
+    html: Optional[str]
 
-    cc: str
+    body_reply_to_1: Annotated[Union[str, SequenceNotStr[str], None], PropertyInfo(alias="reply_to")]
+    """snake_case (legacy)"""
 
-    headers: str
+    body_reply_to_2: Annotated[Union[str, SequenceNotStr[str], None], PropertyInfo(alias="replyTo")]
+    """camelCase (Resend-compatible)"""
 
-    html: str
+    scheduled_at: str
+    """ISO 8601 or natural language ("in 1 hour", "tomorrow at 9am")"""
 
-    body_reply_to_1: Annotated[str, PropertyInfo(alias="reply_to")]
+    subject: str
 
-    body_reply_to_2: Annotated[str, PropertyInfo(alias="replyTo")]
+    tags: Optional[Iterable[Tag]]
 
-    tags: str
+    text: Optional[str]
 
-    text: str
+    timezone: Optional[str]
+    """User's timezone for natural language parsing (defaults to UTC)"""
 
-    timezone: str
+    to: Union[str, SequenceNotStr[str]]
+
+
+class Attachment(TypedDict, total=False):
+    content: Optional[str]
+    """Base64 encoded content"""
+
+    content_id: Optional[str]
+    """Content ID for embedding (e.g., "logo" for <img src="cid:logo">)"""
+
+    content_type: Optional[str]
+    """snake_case (legacy)"""
+
+    content_type: Annotated[Optional[str], PropertyInfo(alias="contentType")]
+    """camelCase (Resend-compatible)"""
+
+    filename: str
+    """Required display name"""
+
+    path: Optional[str]
+    """Remote file URL"""
+
+
+class Tag(TypedDict, total=False):
+    name: str
+
+    value: str

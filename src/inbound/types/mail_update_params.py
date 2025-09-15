@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Optional
 from typing_extensions import Annotated, TypedDict
 
 from .._utils import PropertyInfo
@@ -10,6 +11,6 @@ __all__ = ["MailUpdateParams"]
 
 
 class MailUpdateParams(TypedDict, total=False):
-    is_archived: Annotated[bool, PropertyInfo(alias="isArchived")]
+    is_archived: Annotated[Optional[bool], PropertyInfo(alias="isArchived")]
 
-    is_read: Annotated[bool, PropertyInfo(alias="isRead")]
+    is_read: Annotated[Optional[bool], PropertyInfo(alias="isRead")]

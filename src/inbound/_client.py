@@ -22,7 +22,7 @@ from ._types import (
 )
 from ._utils import is_given, get_async_library
 from ._version import __version__
-from .resources import mail, endpoints, email_addresses
+from .resources import mail, endpoints, onboarding, email_addresses
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
 from ._exceptions import APIStatusError
 from ._base_client import (
@@ -46,8 +46,8 @@ __all__ = [
 ]
 
 ENVIRONMENTS: Dict[str, str] = {
-    "production": "https://inbound.new",
-    "environment_1": "http://localhost:3000",
+    "production": "https://inbound.new/api/v2",
+    "environment_1": "http://localhost:3000/api/v2",
 }
 
 
@@ -57,11 +57,13 @@ class Inbound(SyncAPIClient):
     emails: emails.EmailsResource
     endpoints: endpoints.EndpointsResource
     mail: mail.MailResource
+    onboarding: onboarding.OnboardingResource
     with_raw_response: InboundWithRawResponse
     with_streaming_response: InboundWithStreamedResponse
 
     # client options
     api_key: str | None
+    bearer_token: str | None
 
     _environment: Literal["production", "environment_1"] | NotGiven
 
@@ -69,6 +71,7 @@ class Inbound(SyncAPIClient):
         self,
         *,
         api_key: str | None = None,
+        bearer_token: str | None = None,
         environment: Literal["production", "environment_1"] | NotGiven = NOT_GIVEN,
         base_url: str | httpx.URL | None | NotGiven = NOT_GIVEN,
         timeout: Union[float, Timeout, None, NotGiven] = NOT_GIVEN,
@@ -91,11 +94,17 @@ class Inbound(SyncAPIClient):
     ) -> None:
         """Construct a new synchronous Inbound client instance.
 
-        This automatically infers the `api_key` argument from the `INBOUND_API_KEY` environment variable if it is not provided.
+        This automatically infers the following arguments from their corresponding environment variables if they are not provided:
+        - `api_key` from `INBOUND_API_KEY`
+        - `bearer_token` from `INBOUND_BEARER_TOKEN`
         """
         if api_key is None:
             api_key = os.environ.get("INBOUND_API_KEY")
         self.api_key = api_key
+
+        if bearer_token is None:
+            bearer_token = os.environ.get("INBOUND_BEARER_TOKEN")
+        self.bearer_token = bearer_token
 
         self._environment = environment
 
@@ -139,6 +148,7 @@ class Inbound(SyncAPIClient):
         self.emails = emails.EmailsResource(self)
         self.endpoints = endpoints.EndpointsResource(self)
         self.mail = mail.MailResource(self)
+        self.onboarding = onboarding.OnboardingResource(self)
         self.with_raw_response = InboundWithRawResponse(self)
         self.with_streaming_response = InboundWithStreamedResponse(self)
 
@@ -150,10 +160,21 @@ class Inbound(SyncAPIClient):
     @property
     @override
     def auth_headers(self) -> dict[str, str]:
+        return {**self._api_key_auth, **self._bearer_auth}
+
+    @property
+    def _api_key_auth(self) -> dict[str, str]:
         api_key = self.api_key
         if api_key is None:
             return {}
         return {"Authorization": api_key}
+
+    @property
+    def _bearer_auth(self) -> dict[str, str]:
+        bearer_token = self.bearer_token
+        if bearer_token is None:
+            return {}
+        return {"Authorization": f"Bearer {bearer_token}"}
 
     @property
     @override
@@ -171,14 +192,20 @@ class Inbound(SyncAPIClient):
         if isinstance(custom_headers.get("Authorization"), Omit):
             return
 
+        if self.bearer_token and headers.get("Authorization"):
+            return
+        if isinstance(custom_headers.get("Authorization"), Omit):
+            return
+
         raise TypeError(
-            '"Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted"'
+            '"Could not resolve authentication method. Expected either api_key or bearer_token to be set. Or for one of the `Authorization` or `Authorization` headers to be explicitly omitted"'
         )
 
     def copy(
         self,
         *,
         api_key: str | None = None,
+        bearer_token: str | None = None,
         environment: Literal["production", "environment_1"] | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = NOT_GIVEN,
@@ -214,6 +241,7 @@ class Inbound(SyncAPIClient):
         http_client = http_client or self._client
         return self.__class__(
             api_key=api_key or self.api_key,
+            bearer_token=bearer_token or self.bearer_token,
             base_url=base_url or self.base_url,
             environment=environment or self._environment,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
@@ -268,11 +296,13 @@ class AsyncInbound(AsyncAPIClient):
     emails: emails.AsyncEmailsResource
     endpoints: endpoints.AsyncEndpointsResource
     mail: mail.AsyncMailResource
+    onboarding: onboarding.AsyncOnboardingResource
     with_raw_response: AsyncInboundWithRawResponse
     with_streaming_response: AsyncInboundWithStreamedResponse
 
     # client options
     api_key: str | None
+    bearer_token: str | None
 
     _environment: Literal["production", "environment_1"] | NotGiven
 
@@ -280,6 +310,7 @@ class AsyncInbound(AsyncAPIClient):
         self,
         *,
         api_key: str | None = None,
+        bearer_token: str | None = None,
         environment: Literal["production", "environment_1"] | NotGiven = NOT_GIVEN,
         base_url: str | httpx.URL | None | NotGiven = NOT_GIVEN,
         timeout: Union[float, Timeout, None, NotGiven] = NOT_GIVEN,
@@ -302,11 +333,17 @@ class AsyncInbound(AsyncAPIClient):
     ) -> None:
         """Construct a new async AsyncInbound client instance.
 
-        This automatically infers the `api_key` argument from the `INBOUND_API_KEY` environment variable if it is not provided.
+        This automatically infers the following arguments from their corresponding environment variables if they are not provided:
+        - `api_key` from `INBOUND_API_KEY`
+        - `bearer_token` from `INBOUND_BEARER_TOKEN`
         """
         if api_key is None:
             api_key = os.environ.get("INBOUND_API_KEY")
         self.api_key = api_key
+
+        if bearer_token is None:
+            bearer_token = os.environ.get("INBOUND_BEARER_TOKEN")
+        self.bearer_token = bearer_token
 
         self._environment = environment
 
@@ -350,6 +387,7 @@ class AsyncInbound(AsyncAPIClient):
         self.emails = emails.AsyncEmailsResource(self)
         self.endpoints = endpoints.AsyncEndpointsResource(self)
         self.mail = mail.AsyncMailResource(self)
+        self.onboarding = onboarding.AsyncOnboardingResource(self)
         self.with_raw_response = AsyncInboundWithRawResponse(self)
         self.with_streaming_response = AsyncInboundWithStreamedResponse(self)
 
@@ -361,10 +399,21 @@ class AsyncInbound(AsyncAPIClient):
     @property
     @override
     def auth_headers(self) -> dict[str, str]:
+        return {**self._api_key_auth, **self._bearer_auth}
+
+    @property
+    def _api_key_auth(self) -> dict[str, str]:
         api_key = self.api_key
         if api_key is None:
             return {}
         return {"Authorization": api_key}
+
+    @property
+    def _bearer_auth(self) -> dict[str, str]:
+        bearer_token = self.bearer_token
+        if bearer_token is None:
+            return {}
+        return {"Authorization": f"Bearer {bearer_token}"}
 
     @property
     @override
@@ -382,14 +431,20 @@ class AsyncInbound(AsyncAPIClient):
         if isinstance(custom_headers.get("Authorization"), Omit):
             return
 
+        if self.bearer_token and headers.get("Authorization"):
+            return
+        if isinstance(custom_headers.get("Authorization"), Omit):
+            return
+
         raise TypeError(
-            '"Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted"'
+            '"Could not resolve authentication method. Expected either api_key or bearer_token to be set. Or for one of the `Authorization` or `Authorization` headers to be explicitly omitted"'
         )
 
     def copy(
         self,
         *,
         api_key: str | None = None,
+        bearer_token: str | None = None,
         environment: Literal["production", "environment_1"] | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = NOT_GIVEN,
@@ -425,6 +480,7 @@ class AsyncInbound(AsyncAPIClient):
         http_client = http_client or self._client
         return self.__class__(
             api_key=api_key or self.api_key,
+            bearer_token=bearer_token or self.bearer_token,
             base_url=base_url or self.base_url,
             environment=environment or self._environment,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
@@ -480,6 +536,7 @@ class InboundWithRawResponse:
         self.emails = emails.EmailsResourceWithRawResponse(client.emails)
         self.endpoints = endpoints.EndpointsResourceWithRawResponse(client.endpoints)
         self.mail = mail.MailResourceWithRawResponse(client.mail)
+        self.onboarding = onboarding.OnboardingResourceWithRawResponse(client.onboarding)
 
 
 class AsyncInboundWithRawResponse:
@@ -489,6 +546,7 @@ class AsyncInboundWithRawResponse:
         self.emails = emails.AsyncEmailsResourceWithRawResponse(client.emails)
         self.endpoints = endpoints.AsyncEndpointsResourceWithRawResponse(client.endpoints)
         self.mail = mail.AsyncMailResourceWithRawResponse(client.mail)
+        self.onboarding = onboarding.AsyncOnboardingResourceWithRawResponse(client.onboarding)
 
 
 class InboundWithStreamedResponse:
@@ -498,6 +556,7 @@ class InboundWithStreamedResponse:
         self.emails = emails.EmailsResourceWithStreamingResponse(client.emails)
         self.endpoints = endpoints.EndpointsResourceWithStreamingResponse(client.endpoints)
         self.mail = mail.MailResourceWithStreamingResponse(client.mail)
+        self.onboarding = onboarding.OnboardingResourceWithStreamingResponse(client.onboarding)
 
 
 class AsyncInboundWithStreamedResponse:
@@ -507,6 +566,7 @@ class AsyncInboundWithStreamedResponse:
         self.emails = emails.AsyncEmailsResourceWithStreamingResponse(client.emails)
         self.endpoints = endpoints.AsyncEndpointsResourceWithStreamingResponse(client.endpoints)
         self.mail = mail.AsyncMailResourceWithStreamingResponse(client.mail)
+        self.onboarding = onboarding.AsyncOnboardingResourceWithStreamingResponse(client.onboarding)
 
 
 Client = Inbound
