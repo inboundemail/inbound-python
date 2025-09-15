@@ -10,17 +10,12 @@ __all__ = ["EndpointListParams"]
 
 
 class EndpointListParams(TypedDict, total=False):
-    active: Literal["true", "false", "undefined"]
-    """active parameter"""
+    active: Literal["true", "false"]
 
     limit: float
-    """limit parameter"""
 
     offset: float
-    """offset parameter"""
 
-    sort_by: Annotated[Literal["newest", "oldest", "undefined"], PropertyInfo(alias="sortBy")]
-    """sortBy parameter"""
+    sort_by: Annotated[Literal["newest", "oldest"], PropertyInfo(alias="sortBy")]
 
-    type: Literal["webhook", "email", "email_group", "undefined"]
-    """type parameter"""
+    type: Literal["webhook", "email", "email_group"]

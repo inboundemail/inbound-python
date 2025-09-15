@@ -26,10 +26,7 @@ class TestEmailAddresses:
     @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_method_create(self, client: Inbound) -> None:
-        email_address = client.email_addresses.create(
-            address="address",
-            domain_id="domainId",
-        )
+        email_address = client.email_addresses.create()
         assert_matches_type(EmailAddressCreateResponse, email_address, path=["response"])
 
     @pytest.mark.skip(reason="Prism tests are disabled")
@@ -47,10 +44,7 @@ class TestEmailAddresses:
     @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_raw_response_create(self, client: Inbound) -> None:
-        response = client.email_addresses.with_raw_response.create(
-            address="address",
-            domain_id="domainId",
-        )
+        response = client.email_addresses.with_raw_response.create()
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -60,10 +54,7 @@ class TestEmailAddresses:
     @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_streaming_response_create(self, client: Inbound) -> None:
-        with client.email_addresses.with_streaming_response.create(
-            address="address",
-            domain_id="domainId",
-        ) as response:
+        with client.email_addresses.with_streaming_response.create() as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
@@ -118,7 +109,7 @@ class TestEmailAddresses:
     @parametrize
     def test_method_update(self, client: Inbound) -> None:
         email_address = client.email_addresses.update(
-            id="id",
+            id="123",
         )
         assert_matches_type(EmailAddressUpdateResponse, email_address, path=["response"])
 
@@ -126,7 +117,7 @@ class TestEmailAddresses:
     @parametrize
     def test_method_update_with_all_params(self, client: Inbound) -> None:
         email_address = client.email_addresses.update(
-            id="id",
+            id="123",
             endpoint_id="endpointId",
             is_active=True,
             webhook_id="webhookId",
@@ -137,7 +128,7 @@ class TestEmailAddresses:
     @parametrize
     def test_raw_response_update(self, client: Inbound) -> None:
         response = client.email_addresses.with_raw_response.update(
-            id="id",
+            id="123",
         )
 
         assert response.is_closed is True
@@ -149,7 +140,7 @@ class TestEmailAddresses:
     @parametrize
     def test_streaming_response_update(self, client: Inbound) -> None:
         with client.email_addresses.with_streaming_response.update(
-            id="id",
+            id="123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -258,10 +249,7 @@ class TestAsyncEmailAddresses:
     @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_method_create(self, async_client: AsyncInbound) -> None:
-        email_address = await async_client.email_addresses.create(
-            address="address",
-            domain_id="domainId",
-        )
+        email_address = await async_client.email_addresses.create()
         assert_matches_type(EmailAddressCreateResponse, email_address, path=["response"])
 
     @pytest.mark.skip(reason="Prism tests are disabled")
@@ -279,10 +267,7 @@ class TestAsyncEmailAddresses:
     @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_raw_response_create(self, async_client: AsyncInbound) -> None:
-        response = await async_client.email_addresses.with_raw_response.create(
-            address="address",
-            domain_id="domainId",
-        )
+        response = await async_client.email_addresses.with_raw_response.create()
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -292,10 +277,7 @@ class TestAsyncEmailAddresses:
     @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_streaming_response_create(self, async_client: AsyncInbound) -> None:
-        async with async_client.email_addresses.with_streaming_response.create(
-            address="address",
-            domain_id="domainId",
-        ) as response:
+        async with async_client.email_addresses.with_streaming_response.create() as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
@@ -350,7 +332,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_method_update(self, async_client: AsyncInbound) -> None:
         email_address = await async_client.email_addresses.update(
-            id="id",
+            id="123",
         )
         assert_matches_type(EmailAddressUpdateResponse, email_address, path=["response"])
 
@@ -358,7 +340,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_method_update_with_all_params(self, async_client: AsyncInbound) -> None:
         email_address = await async_client.email_addresses.update(
-            id="id",
+            id="123",
             endpoint_id="endpointId",
             is_active=True,
             webhook_id="webhookId",
@@ -369,7 +351,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_raw_response_update(self, async_client: AsyncInbound) -> None:
         response = await async_client.email_addresses.with_raw_response.update(
-            id="id",
+            id="123",
         )
 
         assert response.is_closed is True
@@ -381,7 +363,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_streaming_response_update(self, async_client: AsyncInbound) -> None:
         async with async_client.email_addresses.with_streaming_response.update(
-            id="id",
+            id="123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"

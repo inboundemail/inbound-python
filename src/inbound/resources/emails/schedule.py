@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Dict, Union, Iterable, Optional
+
 import httpx
 
 from ..._types import NOT_GIVEN, Body, Query, Headers, NotGiven, SequenceNotStr
@@ -18,8 +20,6 @@ from ..._base_client import make_request_options
 from ...types.emails import schedule_list_params, schedule_create_params
 from ...types.emails.schedule_list_response import ScheduleListResponse
 from ...types.emails.schedule_create_response import ScheduleCreateResponse
-from ...types.emails.schedule_delete_response import ScheduleDeleteResponse
-from ...types.emails.schedule_retrieve_response import ScheduleRetrieveResponse
 
 __all__ = ["ScheduleResource", "AsyncScheduleResource"]
 
@@ -31,7 +31,7 @@ class ScheduleResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return ScheduleResourceWithRawResponse(self)
 
@@ -40,27 +40,27 @@ class ScheduleResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return ScheduleResourceWithStreamingResponse(self)
 
     def create(
         self,
         *,
-        from_: str,
-        scheduled_at: str,
-        subject: str,
-        to: str,
-        attachments: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
-        bcc: str | NotGiven = NOT_GIVEN,
-        cc: str | NotGiven = NOT_GIVEN,
-        headers: str | NotGiven = NOT_GIVEN,
-        html: str | NotGiven = NOT_GIVEN,
-        body_reply_to_1: str | NotGiven = NOT_GIVEN,
-        body_reply_to_2: str | NotGiven = NOT_GIVEN,
-        tags: str | NotGiven = NOT_GIVEN,
-        text: str | NotGiven = NOT_GIVEN,
-        timezone: str | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[schedule_create_params.Attachment]] | NotGiven = NOT_GIVEN,
+        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        from_: str | NotGiven = NOT_GIVEN,
+        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
+        html: Optional[str] | NotGiven = NOT_GIVEN,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        scheduled_at: str | NotGiven = NOT_GIVEN,
+        subject: str | NotGiven = NOT_GIVEN,
+        tags: Optional[Iterable[schedule_create_params.Tag]] | NotGiven = NOT_GIVEN,
+        text: Optional[str] | NotGiven = NOT_GIVEN,
+        timezone: Optional[str] | NotGiven = NOT_GIVEN,
+        to: Union[str, SequenceNotStr[str]] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -68,10 +68,23 @@ class ScheduleResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> ScheduleCreateResponse:
-        """
-        POST /emails/schedule
+        """Schedule an email to be sent at a future time.
+
+        Supports natural language
+        scheduling like "in 1 hour" or "tomorrow at 9am". Compatible with Resend API
+        format.
 
         Args:
+          from_: Supports both "email@domain.com" and "Display Name <email@domain.com>" formats
+
+          body_reply_to_1: snake_case (legacy)
+
+          body_reply_to_2: camelCase (Resend-compatible)
+
+          scheduled_at: ISO 8601 or natural language ("in 1 hour", "tomorrow at 9am")
+
+          timezone: User's timezone for natural language parsing (defaults to UTC)
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -81,23 +94,23 @@ class ScheduleResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._post(
-            "/api/v2/emails/schedule",
+            "/v2/emails/schedule",
             body=maybe_transform(
                 {
-                    "from_": from_,
-                    "scheduled_at": scheduled_at,
-                    "subject": subject,
-                    "to": to,
                     "attachments": attachments,
                     "bcc": bcc,
                     "cc": cc,
+                    "from_": from_,
                     "headers": headers,
                     "html": html,
                     "body_reply_to_1": body_reply_to_1,
                     "body_reply_to_2": body_reply_to_2,
+                    "scheduled_at": scheduled_at,
+                    "subject": subject,
                     "tags": tags,
                     "text": text,
                     "timezone": timezone,
+                    "to": to,
                 },
                 schedule_create_params.ScheduleCreateParams,
             ),
@@ -105,39 +118,6 @@ class ScheduleResource(SyncAPIResource):
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
             cast_to=ScheduleCreateResponse,
-        )
-
-    def retrieve(
-        self,
-        id: str,
-        *,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> ScheduleRetrieveResponse:
-        """
-        GET /emails/schedule/{id}
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        if not id:
-            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
-        return self._get(
-            f"/api/v2/emails/schedule/{id}",
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=ScheduleRetrieveResponse,
         )
 
     def list(
@@ -153,15 +133,13 @@ class ScheduleResource(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> ScheduleListResponse:
-        """
-        GET /emails/schedule
+        """Retrieve a list of emails scheduled for future sending.
+
+        Supports filtering by
+        status and pagination.
 
         Args:
-          limit: limit parameter
-
-          offset: offset parameter
-
-          status: status parameter
+          status: Filter by status
 
           extra_headers: Send extra headers
 
@@ -172,7 +150,7 @@ class ScheduleResource(SyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return self._get(
-            "/api/v2/emails/schedule",
+            "/v2/emails/schedule",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -190,39 +168,6 @@ class ScheduleResource(SyncAPIResource):
             cast_to=ScheduleListResponse,
         )
 
-    def delete(
-        self,
-        id: str,
-        *,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> ScheduleDeleteResponse:
-        """
-        DELETE /emails/schedule/{id}
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        if not id:
-            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
-        return self._delete(
-            f"/api/v2/emails/schedule/{id}",
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=ScheduleDeleteResponse,
-        )
-
 
 class AsyncScheduleResource(AsyncAPIResource):
     @cached_property
@@ -231,7 +176,7 @@ class AsyncScheduleResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return AsyncScheduleResourceWithRawResponse(self)
 
@@ -240,27 +185,27 @@ class AsyncScheduleResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return AsyncScheduleResourceWithStreamingResponse(self)
 
     async def create(
         self,
         *,
-        from_: str,
-        scheduled_at: str,
-        subject: str,
-        to: str,
-        attachments: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
-        bcc: str | NotGiven = NOT_GIVEN,
-        cc: str | NotGiven = NOT_GIVEN,
-        headers: str | NotGiven = NOT_GIVEN,
-        html: str | NotGiven = NOT_GIVEN,
-        body_reply_to_1: str | NotGiven = NOT_GIVEN,
-        body_reply_to_2: str | NotGiven = NOT_GIVEN,
-        tags: str | NotGiven = NOT_GIVEN,
-        text: str | NotGiven = NOT_GIVEN,
-        timezone: str | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[schedule_create_params.Attachment]] | NotGiven = NOT_GIVEN,
+        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        from_: str | NotGiven = NOT_GIVEN,
+        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
+        html: Optional[str] | NotGiven = NOT_GIVEN,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        scheduled_at: str | NotGiven = NOT_GIVEN,
+        subject: str | NotGiven = NOT_GIVEN,
+        tags: Optional[Iterable[schedule_create_params.Tag]] | NotGiven = NOT_GIVEN,
+        text: Optional[str] | NotGiven = NOT_GIVEN,
+        timezone: Optional[str] | NotGiven = NOT_GIVEN,
+        to: Union[str, SequenceNotStr[str]] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -268,10 +213,23 @@ class AsyncScheduleResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> ScheduleCreateResponse:
-        """
-        POST /emails/schedule
+        """Schedule an email to be sent at a future time.
+
+        Supports natural language
+        scheduling like "in 1 hour" or "tomorrow at 9am". Compatible with Resend API
+        format.
 
         Args:
+          from_: Supports both "email@domain.com" and "Display Name <email@domain.com>" formats
+
+          body_reply_to_1: snake_case (legacy)
+
+          body_reply_to_2: camelCase (Resend-compatible)
+
+          scheduled_at: ISO 8601 or natural language ("in 1 hour", "tomorrow at 9am")
+
+          timezone: User's timezone for natural language parsing (defaults to UTC)
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -281,23 +239,23 @@ class AsyncScheduleResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._post(
-            "/api/v2/emails/schedule",
+            "/v2/emails/schedule",
             body=await async_maybe_transform(
                 {
-                    "from_": from_,
-                    "scheduled_at": scheduled_at,
-                    "subject": subject,
-                    "to": to,
                     "attachments": attachments,
                     "bcc": bcc,
                     "cc": cc,
+                    "from_": from_,
                     "headers": headers,
                     "html": html,
                     "body_reply_to_1": body_reply_to_1,
                     "body_reply_to_2": body_reply_to_2,
+                    "scheduled_at": scheduled_at,
+                    "subject": subject,
                     "tags": tags,
                     "text": text,
                     "timezone": timezone,
+                    "to": to,
                 },
                 schedule_create_params.ScheduleCreateParams,
             ),
@@ -305,39 +263,6 @@ class AsyncScheduleResource(AsyncAPIResource):
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
             cast_to=ScheduleCreateResponse,
-        )
-
-    async def retrieve(
-        self,
-        id: str,
-        *,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> ScheduleRetrieveResponse:
-        """
-        GET /emails/schedule/{id}
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        if not id:
-            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
-        return await self._get(
-            f"/api/v2/emails/schedule/{id}",
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=ScheduleRetrieveResponse,
         )
 
     async def list(
@@ -353,15 +278,13 @@ class AsyncScheduleResource(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> ScheduleListResponse:
-        """
-        GET /emails/schedule
+        """Retrieve a list of emails scheduled for future sending.
+
+        Supports filtering by
+        status and pagination.
 
         Args:
-          limit: limit parameter
-
-          offset: offset parameter
-
-          status: status parameter
+          status: Filter by status
 
           extra_headers: Send extra headers
 
@@ -372,7 +295,7 @@ class AsyncScheduleResource(AsyncAPIResource):
           timeout: Override the client-level default timeout for this request, in seconds
         """
         return await self._get(
-            "/api/v2/emails/schedule",
+            "/v2/emails/schedule",
             options=make_request_options(
                 extra_headers=extra_headers,
                 extra_query=extra_query,
@@ -390,39 +313,6 @@ class AsyncScheduleResource(AsyncAPIResource):
             cast_to=ScheduleListResponse,
         )
 
-    async def delete(
-        self,
-        id: str,
-        *,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> ScheduleDeleteResponse:
-        """
-        DELETE /emails/schedule/{id}
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        if not id:
-            raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
-        return await self._delete(
-            f"/api/v2/emails/schedule/{id}",
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=ScheduleDeleteResponse,
-        )
-
 
 class ScheduleResourceWithRawResponse:
     def __init__(self, schedule: ScheduleResource) -> None:
@@ -431,14 +321,8 @@ class ScheduleResourceWithRawResponse:
         self.create = to_raw_response_wrapper(
             schedule.create,
         )
-        self.retrieve = to_raw_response_wrapper(
-            schedule.retrieve,
-        )
         self.list = to_raw_response_wrapper(
             schedule.list,
-        )
-        self.delete = to_raw_response_wrapper(
-            schedule.delete,
         )
 
 
@@ -449,14 +333,8 @@ class AsyncScheduleResourceWithRawResponse:
         self.create = async_to_raw_response_wrapper(
             schedule.create,
         )
-        self.retrieve = async_to_raw_response_wrapper(
-            schedule.retrieve,
-        )
         self.list = async_to_raw_response_wrapper(
             schedule.list,
-        )
-        self.delete = async_to_raw_response_wrapper(
-            schedule.delete,
         )
 
 
@@ -467,14 +345,8 @@ class ScheduleResourceWithStreamingResponse:
         self.create = to_streamed_response_wrapper(
             schedule.create,
         )
-        self.retrieve = to_streamed_response_wrapper(
-            schedule.retrieve,
-        )
         self.list = to_streamed_response_wrapper(
             schedule.list,
-        )
-        self.delete = to_streamed_response_wrapper(
-            schedule.delete,
         )
 
 
@@ -485,12 +357,6 @@ class AsyncScheduleResourceWithStreamingResponse:
         self.create = async_to_streamed_response_wrapper(
             schedule.create,
         )
-        self.retrieve = async_to_streamed_response_wrapper(
-            schedule.retrieve,
-        )
         self.list = async_to_streamed_response_wrapper(
             schedule.list,
-        )
-        self.delete = async_to_streamed_response_wrapper(
-            schedule.delete,
         )

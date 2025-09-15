@@ -11,28 +11,19 @@ __all__ = ["MailListParams"]
 
 class MailListParams(TypedDict, total=False):
     domain: str
-    """domain parameter"""
 
     email_address: Annotated[str, PropertyInfo(alias="emailAddress")]
-    """emailAddress parameter"""
 
     email_id: Annotated[str, PropertyInfo(alias="emailId")]
-    """emailId parameter"""
 
     include_archived: Annotated[bool, PropertyInfo(alias="includeArchived")]
-    """includeArchived parameter"""
 
     limit: float
-    """limit parameter"""
 
     offset: float
-    """offset parameter"""
 
     search: str
-    """search parameter"""
 
-    status: Literal["failed", "all", "processed", "undefined"]
-    """status parameter"""
+    status: Literal["all", "processed", "failed"]
 
-    time_range: Annotated[Literal["24h", "7d", "30d", "90d", "undefined"], PropertyInfo(alias="timeRange")]
-    """timeRange parameter"""
+    time_range: Annotated[Literal["24h", "7d", "30d", "90d"], PropertyInfo(alias="timeRange")]

@@ -1,7 +1,7 @@
 # Inbound Python API library
 
 <!-- prettier-ignore -->
-[![PyPI version](https://img.shields.io/pypi/v/inboundemail.svg?label=pypi%20(stable))](https://pypi.org/project/inboundemail/)
+[![PyPI version](https://img.shields.io/pypi/v/inbound.svg?label=pypi%20(stable))](https://pypi.org/project/inbound/)
 
 The Inbound Python library provides convenient access to the Inbound REST API from any Python 3.8+
 application. The library includes type definitions for all request params and response fields,
@@ -11,23 +11,28 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 ## Documentation
 
-The REST API documentation can be found on [inbound.new](https://inbound.new). The full API of this library can be found in [api.md](api.md).
+The REST API documentation can be found on [inbound.new](https://inbound.new/support). The full API of this library can be found in [api.md](api.md).
 
 ## Installation
 
 ```sh
-# install from PyPI
-pip install inboundemail
+# install from this staging repo
+pip install git+ssh://git@github.com/stainless-sdks/inbound-python.git
 ```
+
+> [!NOTE]
+> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install inbound`
 
 ## Usage
 
 The full API of this library can be found in [api.md](api.md).
 
 ```python
+import os
 from inbound import Inbound
 
 client = Inbound(
+    api_key=os.environ.get("INBOUND_API_KEY"),  # This is the default and can be omitted
     # defaults to "production".
     environment="environment_1",
 )
@@ -46,10 +51,12 @@ so that your API Key is not stored in source control.
 Simply import `AsyncInbound` instead of `Inbound` and use `await` with each API call:
 
 ```python
+import os
 import asyncio
 from inbound import AsyncInbound
 
 client = AsyncInbound(
+    api_key=os.environ.get("INBOUND_API_KEY"),  # This is the default and can be omitted
     # defaults to "production".
     environment="environment_1",
 )
@@ -72,8 +79,8 @@ By default, the async client uses `httpx` for HTTP requests. However, for improv
 You can enable this by installing `aiohttp`:
 
 ```sh
-# install from PyPI
-pip install inboundemail[aiohttp]
+# install from this staging repo
+pip install 'inbound[aiohttp] @ git+ssh://git@github.com/stainless-sdks/inbound-python.git'
 ```
 
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
@@ -86,6 +93,7 @@ from inbound import AsyncInbound
 
 async def main() -> None:
     async with AsyncInbound(
+        api_key="My API Key",
         http_client=DefaultAioHttpClient(),
     ) as client:
         domains = await client.domains.list()
@@ -103,6 +111,21 @@ Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typ
 - Converting to a dictionary, `model.to_dict()`
 
 Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
+
+## Nested params
+
+Nested parameters are dictionaries, typed using `TypedDict`, for example:
+
+```python
+from inbound import Inbound
+
+client = Inbound()
+
+response = client.mail.bulk_update(
+    updates={},
+)
+print(response.updates)
+```
 
 ## Handling errors
 
@@ -234,9 +257,9 @@ domain = response.parse()  # get the object that `domains.list()` would have ret
 print(domain.data)
 ```
 
-These methods return an [`APIResponse`](https://github.com/inboundemail/inbound-python/tree/main/src/inbound/_response.py) object.
+These methods return an [`APIResponse`](https://github.com/stainless-sdks/inbound-python/tree/main/src/inbound/_response.py) object.
 
-The async client returns an [`AsyncAPIResponse`](https://github.com/inboundemail/inbound-python/tree/main/src/inbound/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
+The async client returns an [`AsyncAPIResponse`](https://github.com/stainless-sdks/inbound-python/tree/main/src/inbound/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
 
 #### `.with_streaming_response`
 
@@ -340,7 +363,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/inboundemail/inbound-python/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/inbound-python/issues) with questions, bugs, or suggestions.
 
 ### Determining the installed version
 

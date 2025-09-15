@@ -11,18 +11,11 @@ __all__ = ["EmailAddressListParams"]
 
 class EmailAddressListParams(TypedDict, total=False):
     domain_id: Annotated[str, PropertyInfo(alias="domainId")]
-    """domainId parameter"""
 
-    is_active: Annotated[Literal["true", "false", "undefined"], PropertyInfo(alias="isActive")]
-    """isActive parameter"""
+    is_active: Annotated[Literal["true", "false"], PropertyInfo(alias="isActive")]
 
-    is_receipt_rule_configured: Annotated[
-        Literal["true", "false", "undefined"], PropertyInfo(alias="isReceiptRuleConfigured")
-    ]
-    """isReceiptRuleConfigured parameter"""
+    is_receipt_rule_configured: Annotated[Literal["true", "false"], PropertyInfo(alias="isReceiptRuleConfigured")]
 
     limit: float
-    """limit parameter"""
 
     offset: float
-    """offset parameter"""

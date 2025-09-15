@@ -1,5 +1,9 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
+import builtins
+from typing import List, Optional
+from typing_extensions import Literal
+
 from pydantic import Field as FieldInfo
 
 from .._models import BaseModel
@@ -8,26 +12,26 @@ __all__ = ["EmailRetrieveResponse"]
 
 
 class EmailRetrieveResponse(BaseModel):
-    id: str
+    id: Optional[str] = None
 
-    bcc: str
+    bcc: Optional[List[object]] = None
 
-    cc: str
+    cc: Optional[List[object]] = None
 
-    created_at: str
+    created_at: Optional[str] = None
 
-    from_: str = FieldInfo(alias="from")
+    from_: Optional[str] = FieldInfo(alias="from", default=None)
 
-    html: str
+    html: Optional[str] = None
 
-    last_event: str
+    last_event: Optional[str] = None
 
-    object: str
+    object: Optional[Literal["email"]] = None
 
-    reply_to: str
+    reply_to: Optional[List[builtins.object]] = None
 
-    subject: str
+    subject: Optional[str] = None
 
-    text: str
+    text: Optional[str] = None
 
-    to: str
+    to: Optional[List[str]] = None

@@ -1,33 +1,45 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
+from typing import List, Optional
+from datetime import datetime
 from typing_extensions import Literal
 
 from pydantic import Field as FieldInfo
 
 from .._models import BaseModel
 
-__all__ = ["EndpointCreateResponse"]
+__all__ = ["EndpointCreateResponse", "DeliveryStats"]
+
+
+class DeliveryStats(BaseModel):
+    failed: Optional[float] = None
+
+    last_delivery: Optional[str] = FieldInfo(alias="lastDelivery", default=None)
+
+    successful: Optional[float] = None
+
+    total: Optional[float] = None
 
 
 class EndpointCreateResponse(BaseModel):
-    id: str
+    id: Optional[str] = None
 
-    config: str
+    config: Optional[object] = None
 
-    created_at: str = FieldInfo(alias="createdAt")
+    created_at: Optional[datetime] = FieldInfo(alias="createdAt", default=None)
 
-    delivery_stats: str = FieldInfo(alias="deliveryStats")
+    delivery_stats: Optional[DeliveryStats] = FieldInfo(alias="deliveryStats", default=None)
 
-    description: str
+    description: Optional[str] = None
 
-    group_emails: str = FieldInfo(alias="groupEmails")
+    group_emails: Optional[List[str]] = FieldInfo(alias="groupEmails", default=None)
 
-    is_active: bool = FieldInfo(alias="isActive")
+    is_active: Optional[bool] = FieldInfo(alias="isActive", default=None)
 
-    name: str
+    name: Optional[str] = None
 
-    type: Literal["webhook", "email", "email_group"]
+    type: Optional[Literal["webhook", "email", "email_group"]] = None
 
-    updated_at: str = FieldInfo(alias="updatedAt")
+    updated_at: Optional[datetime] = FieldInfo(alias="updatedAt", default=None)
 
-    user_id: str = FieldInfo(alias="userId")
+    user_id: Optional[str] = FieldInfo(alias="userId", default=None)

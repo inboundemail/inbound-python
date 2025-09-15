@@ -1,5 +1,6 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
+from typing import List, Optional
 from typing_extensions import Literal
 
 from pydantic import Field as FieldInfo
@@ -10,22 +11,22 @@ __all__ = ["EndpointUpdateResponse"]
 
 
 class EndpointUpdateResponse(BaseModel):
-    id: str
+    id: Optional[str] = None
 
-    config: str
+    config: Optional[object] = None
 
-    created_at: str = FieldInfo(alias="createdAt")
+    created_at: Optional[str] = FieldInfo(alias="createdAt", default=None)
 
-    description: str
+    description: Optional[str] = None
 
-    group_emails: str = FieldInfo(alias="groupEmails")
+    group_emails: Optional[List[str]] = FieldInfo(alias="groupEmails", default=None)
 
-    is_active: bool = FieldInfo(alias="isActive")
+    is_active: Optional[bool] = FieldInfo(alias="isActive", default=None)
 
-    name: str
+    name: Optional[str] = None
 
-    type: Literal["webhook", "email", "email_group"]
+    type: Optional[Literal["webhook", "email", "email_group"]] = None
 
-    updated_at: str = FieldInfo(alias="updatedAt")
+    updated_at: Optional[str] = FieldInfo(alias="updatedAt", default=None)
 
-    user_id: str = FieldInfo(alias="userId")
+    user_id: Optional[str] = FieldInfo(alias="userId", default=None)

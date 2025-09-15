@@ -10,17 +10,12 @@ __all__ = ["DomainListParams"]
 
 
 class DomainListParams(TypedDict, total=False):
-    can_receive: Annotated[Literal["true", "false", "undefined"], PropertyInfo(alias="canReceive")]
-    """canReceive parameter"""
+    can_receive: Annotated[Literal["true", "false"], PropertyInfo(alias="canReceive")]
 
-    check: Literal["true", "false", "undefined"]
-    """check parameter"""
+    check: Literal["true", "false"]
 
     limit: float
-    """limit parameter"""
 
     offset: float
-    """offset parameter"""
 
-    status: Literal["pending", "verified", "failed", "undefined"]
-    """status parameter"""
+    status: Literal["pending", "verified", "failed"]

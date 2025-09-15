@@ -9,10 +9,8 @@ __all__ = ["ScheduleListParams"]
 
 class ScheduleListParams(TypedDict, total=False):
     limit: float
-    """limit parameter"""
 
     offset: float
-    """offset parameter"""
 
     status: str
-    """status parameter"""
+    """Filter by status"""

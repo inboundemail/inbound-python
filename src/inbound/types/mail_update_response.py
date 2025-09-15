@@ -1,6 +1,7 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing_extensions import Literal
+from typing import Optional
+from datetime import datetime
 
 from pydantic import Field as FieldInfo
 
@@ -10,12 +11,12 @@ __all__ = ["MailUpdateResponse"]
 
 
 class MailUpdateResponse(BaseModel):
-    id: str
+    id: Optional[str] = None
 
-    archived_at: Literal["Date", "null"] = FieldInfo(alias="archivedAt")
+    archived_at: Optional[datetime] = FieldInfo(alias="archivedAt", default=None)
 
-    is_archived: bool = FieldInfo(alias="isArchived")
+    is_archived: Optional[bool] = FieldInfo(alias="isArchived", default=None)
 
-    is_read: bool = FieldInfo(alias="isRead")
+    is_read: Optional[bool] = FieldInfo(alias="isRead", default=None)
 
-    read_at: Literal["Date", "null"] = FieldInfo(alias="readAt")
+    read_at: Optional[datetime] = FieldInfo(alias="readAt", default=None)

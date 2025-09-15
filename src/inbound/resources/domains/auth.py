@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Optional
+
 import httpx
 
 from ..._types import NOT_GIVEN, Body, Query, Headers, NotGiven
@@ -15,9 +17,9 @@ from ..._response import (
     async_to_streamed_response_wrapper,
 )
 from ..._base_client import make_request_options
-from ...types.domains import auth_create_params
-from ...types.domains.auth_create_response import AuthCreateResponse
-from ...types.domains.auth_update_response import AuthUpdateResponse
+from ...types.domains import auth_verify_params, auth_initialize_params
+from ...types.domains.auth_verify_response import AuthVerifyResponse
+from ...types.domains.auth_initialize_response import AuthInitializeResponse
 
 __all__ = ["AuthResource", "AsyncAuthResource"]
 
@@ -29,7 +31,7 @@ class AuthResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return AuthResourceWithRawResponse(self)
 
@@ -38,28 +40,31 @@ class AuthResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return AuthResourceWithStreamingResponse(self)
 
-    def create(
+    def initialize(
         self,
         id: str,
         *,
-        generate_dmarc: bool | NotGiven = NOT_GIVEN,
-        generate_spf: bool | NotGiven = NOT_GIVEN,
-        mail_from_domain: str | NotGiven = NOT_GIVEN,
+        generate_dmarc: Optional[bool] | NotGiven = NOT_GIVEN,
+        generate_spf: Optional[bool] | NotGiven = NOT_GIVEN,
+        mail_from_domain: Optional[str] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> AuthCreateResponse:
+    ) -> AuthInitializeResponse:
         """
-        POST /domains/{id}/auth
+        Initialize AWS SES authentication for a domain including DKIM, MAIL FROM domain,
+        and optional SPF/DMARC records.
 
         Args:
+          id: The ID of the domain
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -71,36 +76,41 @@ class AuthResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/api/v2/domains/{id}/auth",
+            f"/v2/domains/{id}/auth",
             body=maybe_transform(
                 {
                     "generate_dmarc": generate_dmarc,
                     "generate_spf": generate_spf,
                     "mail_from_domain": mail_from_domain,
                 },
-                auth_create_params.AuthCreateParams,
+                auth_initialize_params.AuthInitializeParams,
             ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=AuthCreateResponse,
+            cast_to=AuthInitializeResponse,
         )
 
-    def update(
+    def verify(
         self,
         id: str,
         *,
+        body: object | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> AuthUpdateResponse:
-        """
-        PATCH /domains/{id}/auth
+    ) -> AuthVerifyResponse:
+        """Verify DNS records and check AWS SES authentication status for a domain.
+
+        Updates
+        verification status in the database.
 
         Args:
+          id: The ID of the domain
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -112,11 +122,12 @@ class AuthResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._patch(
-            f"/api/v2/domains/{id}/auth",
+            f"/v2/domains/{id}/auth",
+            body=maybe_transform(body, auth_verify_params.AuthVerifyParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=AuthUpdateResponse,
+            cast_to=AuthVerifyResponse,
         )
 
 
@@ -127,7 +138,7 @@ class AsyncAuthResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
         """
         return AsyncAuthResourceWithRawResponse(self)
 
@@ -136,28 +147,31 @@ class AsyncAuthResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
         """
         return AsyncAuthResourceWithStreamingResponse(self)
 
-    async def create(
+    async def initialize(
         self,
         id: str,
         *,
-        generate_dmarc: bool | NotGiven = NOT_GIVEN,
-        generate_spf: bool | NotGiven = NOT_GIVEN,
-        mail_from_domain: str | NotGiven = NOT_GIVEN,
+        generate_dmarc: Optional[bool] | NotGiven = NOT_GIVEN,
+        generate_spf: Optional[bool] | NotGiven = NOT_GIVEN,
+        mail_from_domain: Optional[str] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> AuthCreateResponse:
+    ) -> AuthInitializeResponse:
         """
-        POST /domains/{id}/auth
+        Initialize AWS SES authentication for a domain including DKIM, MAIL FROM domain,
+        and optional SPF/DMARC records.
 
         Args:
+          id: The ID of the domain
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -169,36 +183,41 @@ class AsyncAuthResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/api/v2/domains/{id}/auth",
+            f"/v2/domains/{id}/auth",
             body=await async_maybe_transform(
                 {
                     "generate_dmarc": generate_dmarc,
                     "generate_spf": generate_spf,
                     "mail_from_domain": mail_from_domain,
                 },
-                auth_create_params.AuthCreateParams,
+                auth_initialize_params.AuthInitializeParams,
             ),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=AuthCreateResponse,
+            cast_to=AuthInitializeResponse,
         )
 
-    async def update(
+    async def verify(
         self,
         id: str,
         *,
+        body: object | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> AuthUpdateResponse:
-        """
-        PATCH /domains/{id}/auth
+    ) -> AuthVerifyResponse:
+        """Verify DNS records and check AWS SES authentication status for a domain.
+
+        Updates
+        verification status in the database.
 
         Args:
+          id: The ID of the domain
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -210,11 +229,12 @@ class AsyncAuthResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._patch(
-            f"/api/v2/domains/{id}/auth",
+            f"/v2/domains/{id}/auth",
+            body=await async_maybe_transform(body, auth_verify_params.AuthVerifyParams),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=AuthUpdateResponse,
+            cast_to=AuthVerifyResponse,
         )
 
 
@@ -222,11 +242,11 @@ class AuthResourceWithRawResponse:
     def __init__(self, auth: AuthResource) -> None:
         self._auth = auth
 
-        self.create = to_raw_response_wrapper(
-            auth.create,
+        self.initialize = to_raw_response_wrapper(
+            auth.initialize,
         )
-        self.update = to_raw_response_wrapper(
-            auth.update,
+        self.verify = to_raw_response_wrapper(
+            auth.verify,
         )
 
 
@@ -234,11 +254,11 @@ class AsyncAuthResourceWithRawResponse:
     def __init__(self, auth: AsyncAuthResource) -> None:
         self._auth = auth
 
-        self.create = async_to_raw_response_wrapper(
-            auth.create,
+        self.initialize = async_to_raw_response_wrapper(
+            auth.initialize,
         )
-        self.update = async_to_raw_response_wrapper(
-            auth.update,
+        self.verify = async_to_raw_response_wrapper(
+            auth.verify,
         )
 
 
@@ -246,11 +266,11 @@ class AuthResourceWithStreamingResponse:
     def __init__(self, auth: AuthResource) -> None:
         self._auth = auth
 
-        self.create = to_streamed_response_wrapper(
-            auth.create,
+        self.initialize = to_streamed_response_wrapper(
+            auth.initialize,
         )
-        self.update = to_streamed_response_wrapper(
-            auth.update,
+        self.verify = to_streamed_response_wrapper(
+            auth.verify,
         )
 
 
@@ -258,9 +278,9 @@ class AsyncAuthResourceWithStreamingResponse:
     def __init__(self, auth: AsyncAuthResource) -> None:
         self._auth = auth
 
-        self.create = async_to_streamed_response_wrapper(
-            auth.create,
+        self.initialize = async_to_streamed_response_wrapper(
+            auth.initialize,
         )
-        self.update = async_to_streamed_response_wrapper(
-            auth.update,
+        self.verify = async_to_streamed_response_wrapper(
+            auth.verify,
         )

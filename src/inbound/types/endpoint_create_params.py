@@ -2,16 +2,17 @@
 
 from __future__ import annotations
 
-from typing_extensions import Literal, Required, TypedDict
+from typing import Optional
+from typing_extensions import Literal, TypedDict
 
 __all__ = ["EndpointCreateParams"]
 
 
 class EndpointCreateParams(TypedDict, total=False):
-    config: Required[str]
+    config: object
 
-    name: Required[str]
+    description: Optional[str]
 
-    type: Required[Literal["webhook", "email", "email_group"]]
+    name: str
 
-    description: str
+    type: Literal["webhook", "email", "email_group"]

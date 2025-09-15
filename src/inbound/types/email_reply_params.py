@@ -2,43 +2,78 @@
 
 from __future__ import annotations
 
-from typing_extensions import Required, Annotated, TypedDict
+from typing import Dict, Union, Iterable, Optional
+from typing_extensions import Annotated, TypedDict
 
 from .._types import SequenceNotStr
 from .._utils import PropertyInfo
 
-__all__ = ["EmailReplyParams"]
+__all__ = ["EmailReplyParams", "Attachment", "Tag"]
 
 
 class EmailReplyParams(TypedDict, total=False):
-    from_: Required[Annotated[str, PropertyInfo(alias="from")]]
+    attachments: Optional[Iterable[Attachment]]
 
-    attachments: SequenceNotStr[str]
+    bcc: Union[str, SequenceNotStr[str], None]
 
-    bcc: str
+    cc: Union[str, SequenceNotStr[str], None]
 
-    cc: str
+    from_: Annotated[str, PropertyInfo(alias="from")]
 
-    from_name: str
+    from_name: Optional[str]
+    """Optional sender name for display"""
 
-    headers: str
+    headers: Optional[Dict[str, str]]
 
-    html: str
+    html: Optional[str]
 
-    body_include_original_1: Annotated[bool, PropertyInfo(alias="include_original")]
+    body_include_original_1: Annotated[Optional[bool], PropertyInfo(alias="include_original")]
+    """snake_case (legacy)"""
 
-    body_include_original_2: Annotated[bool, PropertyInfo(alias="includeOriginal")]
+    body_include_original_2: Annotated[Optional[bool], PropertyInfo(alias="includeOriginal")]
+    """camelCase (Resend-compatible)"""
 
-    body_reply_to_1: Annotated[str, PropertyInfo(alias="reply_to")]
+    body_reply_to_1: Annotated[Union[str, SequenceNotStr[str], None], PropertyInfo(alias="reply_to")]
+    """snake_case (legacy)"""
 
-    body_reply_to_2: Annotated[str, PropertyInfo(alias="replyTo")]
+    body_reply_to_2: Annotated[Union[str, SequenceNotStr[str], None], PropertyInfo(alias="replyTo")]
+    """camelCase (Resend-compatible)"""
 
-    simple: bool
+    simple: Optional[bool]
+    """Use simplified reply mode (faster, lighter)"""
 
-    subject: str
+    subject: Optional[str]
+    """Optional - will add "Re: " to original subject if not provided"""
 
-    tags: str
+    tags: Optional[Iterable[Tag]]
 
-    text: str
+    text: Optional[str]
 
-    to: str
+    to: Union[str, SequenceNotStr[str], None]
+    """Optional - will use original sender if not provided"""
+
+
+class Attachment(TypedDict, total=False):
+    content: Optional[str]
+    """Base64 encoded content"""
+
+    content_id: Optional[str]
+    """Content ID for embedding (e.g., "logo" for <img src="cid:logo">)"""
+
+    content_type: Optional[str]
+    """snake_case (legacy)"""
+
+    content_type: Annotated[Optional[str], PropertyInfo(alias="contentType")]
+    """camelCase (Resend-compatible)"""
+
+    filename: str
+    """Required display name"""
+
+    path: Optional[str]
+    """Remote file URL"""
+
+
+class Tag(TypedDict, total=False):
+    name: str
+
+    value: str
