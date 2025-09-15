@@ -25,7 +25,7 @@ class OnboardingResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
         """
         return OnboardingResourceWithRawResponse(self)
 
@@ -34,7 +34,7 @@ class OnboardingResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
         """
         return OnboardingResourceWithStreamingResponse(self)
 
@@ -103,7 +103,7 @@ class AsyncOnboardingResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/stainless-sdks/inbound-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/inboundemail/inbound-python#accessing-raw-response-data-eg-headers
         """
         return AsyncOnboardingResourceWithRawResponse(self)
 
@@ -112,7 +112,7 @@ class AsyncOnboardingResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/stainless-sdks/inbound-python#with_streaming_response
+        For more information, see https://www.github.com/inboundemail/inbound-python#with_streaming_response
         """
         return AsyncOnboardingResourceWithStreamingResponse(self)
 
