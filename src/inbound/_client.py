@@ -22,6 +22,7 @@ from ._types import (
 )
 from ._utils import is_given, get_async_library
 from ._version import __version__
+from .resources import mail, endpoints, email_addresses
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
 from ._exceptions import APIStatusError
 from ._base_client import (
@@ -29,7 +30,8 @@ from ._base_client import (
     SyncAPIClient,
     AsyncAPIClient,
 )
-from .resources.v2 import v2
+from .resources.emails import emails
+from .resources.domains import domains
 
 __all__ = [
     "ENVIRONMENTS",
@@ -50,7 +52,11 @@ ENVIRONMENTS: Dict[str, str] = {
 
 
 class Inbound(SyncAPIClient):
-    v2: v2.V2Resource
+    domains: domains.DomainsResource
+    email_addresses: email_addresses.EmailAddressesResource
+    emails: emails.EmailsResource
+    endpoints: endpoints.EndpointsResource
+    mail: mail.MailResource
     with_raw_response: InboundWithRawResponse
     with_streaming_response: InboundWithStreamedResponse
 
@@ -128,7 +134,11 @@ class Inbound(SyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.v2 = v2.V2Resource(self)
+        self.domains = domains.DomainsResource(self)
+        self.email_addresses = email_addresses.EmailAddressesResource(self)
+        self.emails = emails.EmailsResource(self)
+        self.endpoints = endpoints.EndpointsResource(self)
+        self.mail = mail.MailResource(self)
         self.with_raw_response = InboundWithRawResponse(self)
         self.with_streaming_response = InboundWithStreamedResponse(self)
 
@@ -253,7 +263,11 @@ class Inbound(SyncAPIClient):
 
 
 class AsyncInbound(AsyncAPIClient):
-    v2: v2.AsyncV2Resource
+    domains: domains.AsyncDomainsResource
+    email_addresses: email_addresses.AsyncEmailAddressesResource
+    emails: emails.AsyncEmailsResource
+    endpoints: endpoints.AsyncEndpointsResource
+    mail: mail.AsyncMailResource
     with_raw_response: AsyncInboundWithRawResponse
     with_streaming_response: AsyncInboundWithStreamedResponse
 
@@ -331,7 +345,11 @@ class AsyncInbound(AsyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.v2 = v2.AsyncV2Resource(self)
+        self.domains = domains.AsyncDomainsResource(self)
+        self.email_addresses = email_addresses.AsyncEmailAddressesResource(self)
+        self.emails = emails.AsyncEmailsResource(self)
+        self.endpoints = endpoints.AsyncEndpointsResource(self)
+        self.mail = mail.AsyncMailResource(self)
         self.with_raw_response = AsyncInboundWithRawResponse(self)
         self.with_streaming_response = AsyncInboundWithStreamedResponse(self)
 
@@ -457,22 +475,38 @@ class AsyncInbound(AsyncAPIClient):
 
 class InboundWithRawResponse:
     def __init__(self, client: Inbound) -> None:
-        self.v2 = v2.V2ResourceWithRawResponse(client.v2)
+        self.domains = domains.DomainsResourceWithRawResponse(client.domains)
+        self.email_addresses = email_addresses.EmailAddressesResourceWithRawResponse(client.email_addresses)
+        self.emails = emails.EmailsResourceWithRawResponse(client.emails)
+        self.endpoints = endpoints.EndpointsResourceWithRawResponse(client.endpoints)
+        self.mail = mail.MailResourceWithRawResponse(client.mail)
 
 
 class AsyncInboundWithRawResponse:
     def __init__(self, client: AsyncInbound) -> None:
-        self.v2 = v2.AsyncV2ResourceWithRawResponse(client.v2)
+        self.domains = domains.AsyncDomainsResourceWithRawResponse(client.domains)
+        self.email_addresses = email_addresses.AsyncEmailAddressesResourceWithRawResponse(client.email_addresses)
+        self.emails = emails.AsyncEmailsResourceWithRawResponse(client.emails)
+        self.endpoints = endpoints.AsyncEndpointsResourceWithRawResponse(client.endpoints)
+        self.mail = mail.AsyncMailResourceWithRawResponse(client.mail)
 
 
 class InboundWithStreamedResponse:
     def __init__(self, client: Inbound) -> None:
-        self.v2 = v2.V2ResourceWithStreamingResponse(client.v2)
+        self.domains = domains.DomainsResourceWithStreamingResponse(client.domains)
+        self.email_addresses = email_addresses.EmailAddressesResourceWithStreamingResponse(client.email_addresses)
+        self.emails = emails.EmailsResourceWithStreamingResponse(client.emails)
+        self.endpoints = endpoints.EndpointsResourceWithStreamingResponse(client.endpoints)
+        self.mail = mail.MailResourceWithStreamingResponse(client.mail)
 
 
 class AsyncInboundWithStreamedResponse:
     def __init__(self, client: AsyncInbound) -> None:
-        self.v2 = v2.AsyncV2ResourceWithStreamingResponse(client.v2)
+        self.domains = domains.AsyncDomainsResourceWithStreamingResponse(client.domains)
+        self.email_addresses = email_addresses.AsyncEmailAddressesResourceWithStreamingResponse(client.email_addresses)
+        self.emails = emails.AsyncEmailsResourceWithStreamingResponse(client.emails)
+        self.endpoints = endpoints.AsyncEndpointsResourceWithStreamingResponse(client.endpoints)
+        self.mail = mail.AsyncMailResourceWithStreamingResponse(client.mail)
 
 
 Client = Inbound

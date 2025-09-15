@@ -32,7 +32,7 @@ client = Inbound(
     environment="environment_1",
 )
 
-domains = client.v2.domains.list()
+domains = client.domains.list()
 print(domains.data)
 ```
 
@@ -56,7 +56,7 @@ client = AsyncInbound(
 
 
 async def main() -> None:
-    domains = await client.v2.domains.list()
+    domains = await client.domains.list()
     print(domains.data)
 
 
@@ -88,7 +88,7 @@ async def main() -> None:
     async with AsyncInbound(
         http_client=DefaultAioHttpClient(),
     ) as client:
-        domains = await client.v2.domains.list()
+        domains = await client.domains.list()
         print(domains.data)
 
 
@@ -120,7 +120,7 @@ from inbound import Inbound
 client = Inbound()
 
 try:
-    client.v2.domains.list()
+    client.domains.list()
 except inbound.APIConnectionError as e:
     print("The server could not be reached")
     print(e.__cause__)  # an underlying Exception, likely raised within httpx.
@@ -163,7 +163,7 @@ client = Inbound(
 )
 
 # Or, configure per-request:
-client.with_options(max_retries=5).v2.domains.list()
+client.with_options(max_retries=5).domains.list()
 ```
 
 ### Timeouts
@@ -186,7 +186,7 @@ client = Inbound(
 )
 
 # Override per-request:
-client.with_options(timeout=5.0).v2.domains.list()
+client.with_options(timeout=5.0).domains.list()
 ```
 
 On timeout, an `APITimeoutError` is thrown.
@@ -227,10 +227,10 @@ The "raw" Response object can be accessed by prefixing `.with_raw_response.` to 
 from inbound import Inbound
 
 client = Inbound()
-response = client.v2.domains.with_raw_response.list()
+response = client.domains.with_raw_response.list()
 print(response.headers.get('X-My-Header'))
 
-domain = response.parse()  # get the object that `v2.domains.list()` would have returned
+domain = response.parse()  # get the object that `domains.list()` would have returned
 print(domain.data)
 ```
 
@@ -245,7 +245,7 @@ The above interface eagerly reads the full response body when you make the reque
 To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
 
 ```python
-with client.v2.domains.with_streaming_response.list() as response:
+with client.domains.with_streaming_response.list() as response:
     print(response.headers.get("X-My-Header"))
 
     for line in response.iter_lines():
