@@ -344,7 +344,7 @@ class TestInbound:
 
         with pytest.raises(
             TypeError,
-            match="Could not resolve authentication method. Expected either api_key or bearer_token to be set. Or for one of the `Authorization` or `Authorization` headers to be explicitly omitted",
+            match="Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted",
         ):
             client2._build_request(FinalRequestOptions(method="get", url="/foo"))
 
@@ -1162,7 +1162,7 @@ class TestAsyncInbound:
 
         with pytest.raises(
             TypeError,
-            match="Could not resolve authentication method. Expected either api_key or bearer_token to be set. Or for one of the `Authorization` or `Authorization` headers to be explicitly omitted",
+            match="Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted",
         ):
             client2._build_request(FinalRequestOptions(method="get", url="/foo"))
 
