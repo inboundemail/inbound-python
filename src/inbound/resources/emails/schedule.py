@@ -6,7 +6,7 @@ from typing import Dict, Union, Iterable, Optional
 
 import httpx
 
-from ..._types import NOT_GIVEN, Body, Query, Headers, NotGiven, SequenceNotStr
+from ..._types import Body, Omit, Query, Headers, NotGiven, SequenceNotStr, omit, not_given
 from ..._utils import maybe_transform, async_maybe_transform
 from ..._compat import cached_property
 from ..._resource import SyncAPIResource, AsyncAPIResource
@@ -47,26 +47,26 @@ class ScheduleResource(SyncAPIResource):
     def create(
         self,
         *,
-        attachments: Optional[Iterable[schedule_create_params.Attachment]] | NotGiven = NOT_GIVEN,
-        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        from_: str | NotGiven = NOT_GIVEN,
-        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
-        html: Optional[str] | NotGiven = NOT_GIVEN,
-        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        scheduled_at: str | NotGiven = NOT_GIVEN,
-        subject: str | NotGiven = NOT_GIVEN,
-        tags: Optional[Iterable[schedule_create_params.Tag]] | NotGiven = NOT_GIVEN,
-        text: Optional[str] | NotGiven = NOT_GIVEN,
-        timezone: Optional[str] | NotGiven = NOT_GIVEN,
-        to: Union[str, SequenceNotStr[str]] | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[schedule_create_params.Attachment]] | Omit = omit,
+        bcc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        cc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        from_: str | Omit = omit,
+        headers: Optional[Dict[str, str]] | Omit = omit,
+        html: Optional[str] | Omit = omit,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        scheduled_at: str | Omit = omit,
+        subject: str | Omit = omit,
+        tags: Optional[Iterable[schedule_create_params.Tag]] | Omit = omit,
+        text: Optional[str] | Omit = omit,
+        timezone: Optional[str] | Omit = omit,
+        to: Union[str, SequenceNotStr[str]] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ScheduleCreateResponse:
         """Schedule an email to be sent at a future time.
 
@@ -123,15 +123,15 @@ class ScheduleResource(SyncAPIResource):
     def list(
         self,
         *,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
-        status: str | NotGiven = NOT_GIVEN,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
+        status: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ScheduleListResponse:
         """Retrieve a list of emails scheduled for future sending.
 
@@ -192,26 +192,26 @@ class AsyncScheduleResource(AsyncAPIResource):
     async def create(
         self,
         *,
-        attachments: Optional[Iterable[schedule_create_params.Attachment]] | NotGiven = NOT_GIVEN,
-        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        from_: str | NotGiven = NOT_GIVEN,
-        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
-        html: Optional[str] | NotGiven = NOT_GIVEN,
-        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        scheduled_at: str | NotGiven = NOT_GIVEN,
-        subject: str | NotGiven = NOT_GIVEN,
-        tags: Optional[Iterable[schedule_create_params.Tag]] | NotGiven = NOT_GIVEN,
-        text: Optional[str] | NotGiven = NOT_GIVEN,
-        timezone: Optional[str] | NotGiven = NOT_GIVEN,
-        to: Union[str, SequenceNotStr[str]] | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[schedule_create_params.Attachment]] | Omit = omit,
+        bcc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        cc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        from_: str | Omit = omit,
+        headers: Optional[Dict[str, str]] | Omit = omit,
+        html: Optional[str] | Omit = omit,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        scheduled_at: str | Omit = omit,
+        subject: str | Omit = omit,
+        tags: Optional[Iterable[schedule_create_params.Tag]] | Omit = omit,
+        text: Optional[str] | Omit = omit,
+        timezone: Optional[str] | Omit = omit,
+        to: Union[str, SequenceNotStr[str]] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ScheduleCreateResponse:
         """Schedule an email to be sent at a future time.
 
@@ -268,15 +268,15 @@ class AsyncScheduleResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
-        status: str | NotGiven = NOT_GIVEN,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
+        status: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ScheduleListResponse:
         """Retrieve a list of emails scheduled for future sending.
 

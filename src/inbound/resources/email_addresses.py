@@ -8,7 +8,7 @@ from typing_extensions import Literal
 import httpx
 
 from ..types import email_address_list_params, email_address_create_params, email_address_update_params
-from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
+from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
@@ -51,17 +51,17 @@ class EmailAddressesResource(SyncAPIResource):
     def create(
         self,
         *,
-        address: str | NotGiven = NOT_GIVEN,
-        domain_id: str | NotGiven = NOT_GIVEN,
-        endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
-        webhook_id: Optional[str] | NotGiven = NOT_GIVEN,
+        address: str | Omit = omit,
+        domain_id: str | Omit = omit,
+        endpoint_id: Optional[str] | Omit = omit,
+        is_active: Optional[bool] | Omit = omit,
+        webhook_id: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressCreateResponse:
         """
         Create a new email address for receiving emails and configure AWS SES receipt
@@ -103,7 +103,7 @@ class EmailAddressesResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressRetrieveResponse:
         """
         Get detailed information about a specific email address including domain and
@@ -134,15 +134,15 @@ class EmailAddressesResource(SyncAPIResource):
         self,
         id: str,
         *,
-        endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
-        webhook_id: Optional[str] | NotGiven = NOT_GIVEN,
+        endpoint_id: Optional[str] | Omit = omit,
+        is_active: Optional[bool] | Omit = omit,
+        webhook_id: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressUpdateResponse:
         """
         Update an email address's routing configuration (endpoint, webhook, or disable
@@ -180,17 +180,17 @@ class EmailAddressesResource(SyncAPIResource):
     def list(
         self,
         *,
-        domain_id: str | NotGiven = NOT_GIVEN,
-        is_active: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        is_receipt_rule_configured: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
+        domain_id: str | Omit = omit,
+        is_active: Literal["true", "false"] | Omit = omit,
+        is_receipt_rule_configured: Literal["true", "false"] | Omit = omit,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressListResponse:
         """
         Retrieve all email addresses for the authenticated user with filtering and
@@ -235,7 +235,7 @@ class EmailAddressesResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressDeleteResponse:
         """
         Permanently delete an email address and update AWS SES receipt rules
@@ -286,17 +286,17 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
     async def create(
         self,
         *,
-        address: str | NotGiven = NOT_GIVEN,
-        domain_id: str | NotGiven = NOT_GIVEN,
-        endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
-        webhook_id: Optional[str] | NotGiven = NOT_GIVEN,
+        address: str | Omit = omit,
+        domain_id: str | Omit = omit,
+        endpoint_id: Optional[str] | Omit = omit,
+        is_active: Optional[bool] | Omit = omit,
+        webhook_id: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressCreateResponse:
         """
         Create a new email address for receiving emails and configure AWS SES receipt
@@ -338,7 +338,7 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressRetrieveResponse:
         """
         Get detailed information about a specific email address including domain and
@@ -369,15 +369,15 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
-        webhook_id: Optional[str] | NotGiven = NOT_GIVEN,
+        endpoint_id: Optional[str] | Omit = omit,
+        is_active: Optional[bool] | Omit = omit,
+        webhook_id: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressUpdateResponse:
         """
         Update an email address's routing configuration (endpoint, webhook, or disable
@@ -415,17 +415,17 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        domain_id: str | NotGiven = NOT_GIVEN,
-        is_active: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        is_receipt_rule_configured: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
+        domain_id: str | Omit = omit,
+        is_active: Literal["true", "false"] | Omit = omit,
+        is_receipt_rule_configured: Literal["true", "false"] | Omit = omit,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressListResponse:
         """
         Retrieve all email addresses for the authenticated user with filtering and
@@ -470,7 +470,7 @@ class AsyncEmailAddressesResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailAddressDeleteResponse:
         """
         Permanently delete an email address and update AWS SES receipt rules

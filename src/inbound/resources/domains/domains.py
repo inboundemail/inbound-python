@@ -22,7 +22,7 @@ from ...types import (
     domain_update_catch_all_params,
     domain_upgrade_mail_from_params,
 )
-from ..._types import NOT_GIVEN, Body, Query, Headers, NotGiven
+from ..._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
 from ..._utils import maybe_transform, async_maybe_transform
 from ..._compat import cached_property
 from ..._resource import SyncAPIResource, AsyncAPIResource
@@ -71,13 +71,13 @@ class DomainsResource(SyncAPIResource):
     def create(
         self,
         *,
-        domain: str | NotGiven = NOT_GIVEN,
+        domain: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainCreateResponse:
         """Add a new domain for email receiving.
 
@@ -106,13 +106,13 @@ class DomainsResource(SyncAPIResource):
         self,
         path_id: str,
         *,
-        query_id: str | NotGiven = NOT_GIVEN,
+        query_id: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainRetrieveResponse:
         """
         Get detailed information about a specific domain including verification status,
@@ -148,17 +148,17 @@ class DomainsResource(SyncAPIResource):
     def list(
         self,
         *,
-        can_receive: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        check: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
-        status: Literal["pending", "verified", "failed"] | NotGiven = NOT_GIVEN,
+        can_receive: Literal["true", "false"] | Omit = omit,
+        check: Literal["true", "false"] | Omit = omit,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
+        status: Literal["pending", "verified", "failed"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainListResponse:
         """
         Retrieve all domains for the authenticated user with filtering, pagination, and
@@ -203,7 +203,7 @@ class DomainsResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainDeleteResponse:
         """
         Permanently delete a domain and all its associated resources (email addresses,
@@ -239,7 +239,7 @@ class DomainsResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainRetrieveDNSRecordsResponse:
         """
         Retrieve all DNS records associated with a domain, including verification status
@@ -270,14 +270,14 @@ class DomainsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        catch_all_endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_catch_all_enabled: bool | NotGiven = NOT_GIVEN,
+        catch_all_endpoint_id: Optional[str] | Omit = omit,
+        is_catch_all_enabled: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainUpdateCatchAllResponse:
         """Configure catch-all email routing for a domain.
 
@@ -316,13 +316,13 @@ class DomainsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        body: object | NotGiven = NOT_GIVEN,
+        body: object | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainUpgradeMailFromResponse:
         """
         Upgrade an existing domain with MAIL FROM domain configuration to eliminate the
@@ -378,13 +378,13 @@ class AsyncDomainsResource(AsyncAPIResource):
     async def create(
         self,
         *,
-        domain: str | NotGiven = NOT_GIVEN,
+        domain: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainCreateResponse:
         """Add a new domain for email receiving.
 
@@ -413,13 +413,13 @@ class AsyncDomainsResource(AsyncAPIResource):
         self,
         path_id: str,
         *,
-        query_id: str | NotGiven = NOT_GIVEN,
+        query_id: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainRetrieveResponse:
         """
         Get detailed information about a specific domain including verification status,
@@ -455,17 +455,17 @@ class AsyncDomainsResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        can_receive: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        check: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
-        status: Literal["pending", "verified", "failed"] | NotGiven = NOT_GIVEN,
+        can_receive: Literal["true", "false"] | Omit = omit,
+        check: Literal["true", "false"] | Omit = omit,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
+        status: Literal["pending", "verified", "failed"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainListResponse:
         """
         Retrieve all domains for the authenticated user with filtering, pagination, and
@@ -510,7 +510,7 @@ class AsyncDomainsResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainDeleteResponse:
         """
         Permanently delete a domain and all its associated resources (email addresses,
@@ -546,7 +546,7 @@ class AsyncDomainsResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainRetrieveDNSRecordsResponse:
         """
         Retrieve all DNS records associated with a domain, including verification status
@@ -577,14 +577,14 @@ class AsyncDomainsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        catch_all_endpoint_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_catch_all_enabled: bool | NotGiven = NOT_GIVEN,
+        catch_all_endpoint_id: Optional[str] | Omit = omit,
+        is_catch_all_enabled: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainUpdateCatchAllResponse:
         """Configure catch-all email routing for a domain.
 
@@ -623,13 +623,13 @@ class AsyncDomainsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        body: object | NotGiven = NOT_GIVEN,
+        body: object | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DomainUpgradeMailFromResponse:
         """
         Upgrade an existing domain with MAIL FROM domain configuration to eliminate the

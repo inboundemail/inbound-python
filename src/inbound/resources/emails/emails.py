@@ -7,7 +7,7 @@ from typing import Dict, Union, Iterable, Optional
 import httpx
 
 from ...types import email_send_params, email_reply_params
-from ..._types import NOT_GIVEN, Body, Query, Headers, NotGiven, SequenceNotStr
+from ..._types import Body, Omit, Query, Headers, NotGiven, SequenceNotStr, omit, not_given
 from ..._utils import maybe_transform, async_maybe_transform
 from .schedule import (
     ScheduleResource,
@@ -66,7 +66,7 @@ class EmailsResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailRetrieveResponse:
         """Retrieve details of a specific sent email by its ID.
 
@@ -98,28 +98,28 @@ class EmailsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        attachments: Optional[Iterable[email_reply_params.Attachment]] | NotGiven = NOT_GIVEN,
-        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        from_: str | NotGiven = NOT_GIVEN,
-        from_name: Optional[str] | NotGiven = NOT_GIVEN,
-        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
-        html: Optional[str] | NotGiven = NOT_GIVEN,
-        body_include_original_1: Optional[bool] | NotGiven = NOT_GIVEN,
-        body_include_original_2: Optional[bool] | NotGiven = NOT_GIVEN,
-        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        simple: Optional[bool] | NotGiven = NOT_GIVEN,
-        subject: Optional[str] | NotGiven = NOT_GIVEN,
-        tags: Optional[Iterable[email_reply_params.Tag]] | NotGiven = NOT_GIVEN,
-        text: Optional[str] | NotGiven = NOT_GIVEN,
-        to: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[email_reply_params.Attachment]] | Omit = omit,
+        bcc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        cc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        from_: str | Omit = omit,
+        from_name: Optional[str] | Omit = omit,
+        headers: Optional[Dict[str, str]] | Omit = omit,
+        html: Optional[str] | Omit = omit,
+        body_include_original_1: Optional[bool] | Omit = omit,
+        body_include_original_2: Optional[bool] | Omit = omit,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        simple: Optional[bool] | Omit = omit,
+        subject: Optional[str] | Omit = omit,
+        tags: Optional[Iterable[email_reply_params.Tag]] | Omit = omit,
+        text: Optional[str] | Omit = omit,
+        to: Union[str, SequenceNotStr[str], None] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailReplyResponse:
         """Reply to an inbound email with proper threading support.
 
@@ -187,24 +187,24 @@ class EmailsResource(SyncAPIResource):
     def send(
         self,
         *,
-        attachments: Optional[Iterable[email_send_params.Attachment]] | NotGiven = NOT_GIVEN,
-        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        from_: str | NotGiven = NOT_GIVEN,
-        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
-        html: Optional[str] | NotGiven = NOT_GIVEN,
-        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        subject: str | NotGiven = NOT_GIVEN,
-        tags: Optional[Iterable[email_send_params.Tag]] | NotGiven = NOT_GIVEN,
-        text: Optional[str] | NotGiven = NOT_GIVEN,
-        to: Union[str, SequenceNotStr[str]] | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[email_send_params.Attachment]] | Omit = omit,
+        bcc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        cc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        from_: str | Omit = omit,
+        headers: Optional[Dict[str, str]] | Omit = omit,
+        html: Optional[str] | Omit = omit,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        subject: str | Omit = omit,
+        tags: Optional[Iterable[email_send_params.Tag]] | Omit = omit,
+        text: Optional[str] | Omit = omit,
+        to: Union[str, SequenceNotStr[str]] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailSendResponse:
         """Send a single email through the Inbound API.
 
@@ -287,7 +287,7 @@ class AsyncEmailsResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailRetrieveResponse:
         """Retrieve details of a specific sent email by its ID.
 
@@ -319,28 +319,28 @@ class AsyncEmailsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        attachments: Optional[Iterable[email_reply_params.Attachment]] | NotGiven = NOT_GIVEN,
-        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        from_: str | NotGiven = NOT_GIVEN,
-        from_name: Optional[str] | NotGiven = NOT_GIVEN,
-        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
-        html: Optional[str] | NotGiven = NOT_GIVEN,
-        body_include_original_1: Optional[bool] | NotGiven = NOT_GIVEN,
-        body_include_original_2: Optional[bool] | NotGiven = NOT_GIVEN,
-        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        simple: Optional[bool] | NotGiven = NOT_GIVEN,
-        subject: Optional[str] | NotGiven = NOT_GIVEN,
-        tags: Optional[Iterable[email_reply_params.Tag]] | NotGiven = NOT_GIVEN,
-        text: Optional[str] | NotGiven = NOT_GIVEN,
-        to: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[email_reply_params.Attachment]] | Omit = omit,
+        bcc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        cc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        from_: str | Omit = omit,
+        from_name: Optional[str] | Omit = omit,
+        headers: Optional[Dict[str, str]] | Omit = omit,
+        html: Optional[str] | Omit = omit,
+        body_include_original_1: Optional[bool] | Omit = omit,
+        body_include_original_2: Optional[bool] | Omit = omit,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        simple: Optional[bool] | Omit = omit,
+        subject: Optional[str] | Omit = omit,
+        tags: Optional[Iterable[email_reply_params.Tag]] | Omit = omit,
+        text: Optional[str] | Omit = omit,
+        to: Union[str, SequenceNotStr[str], None] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailReplyResponse:
         """Reply to an inbound email with proper threading support.
 
@@ -408,24 +408,24 @@ class AsyncEmailsResource(AsyncAPIResource):
     async def send(
         self,
         *,
-        attachments: Optional[Iterable[email_send_params.Attachment]] | NotGiven = NOT_GIVEN,
-        bcc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        cc: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        from_: str | NotGiven = NOT_GIVEN,
-        headers: Optional[Dict[str, str]] | NotGiven = NOT_GIVEN,
-        html: Optional[str] | NotGiven = NOT_GIVEN,
-        body_reply_to_1: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        body_reply_to_2: Union[str, SequenceNotStr[str], None] | NotGiven = NOT_GIVEN,
-        subject: str | NotGiven = NOT_GIVEN,
-        tags: Optional[Iterable[email_send_params.Tag]] | NotGiven = NOT_GIVEN,
-        text: Optional[str] | NotGiven = NOT_GIVEN,
-        to: Union[str, SequenceNotStr[str]] | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[email_send_params.Attachment]] | Omit = omit,
+        bcc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        cc: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        from_: str | Omit = omit,
+        headers: Optional[Dict[str, str]] | Omit = omit,
+        html: Optional[str] | Omit = omit,
+        body_reply_to_1: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        body_reply_to_2: Union[str, SequenceNotStr[str], None] | Omit = omit,
+        subject: str | Omit = omit,
+        tags: Optional[Iterable[email_send_params.Tag]] | Omit = omit,
+        text: Optional[str] | Omit = omit,
+        to: Union[str, SequenceNotStr[str]] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EmailSendResponse:
         """Send a single email through the Inbound API.
 

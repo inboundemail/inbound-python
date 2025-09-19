@@ -8,7 +8,7 @@ from typing_extensions import Literal
 import httpx
 
 from ..types import endpoint_list_params, endpoint_test_params, endpoint_create_params, endpoint_update_params
-from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
+from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
@@ -52,16 +52,16 @@ class EndpointsResource(SyncAPIResource):
     def create(
         self,
         *,
-        config: object | NotGiven = NOT_GIVEN,
-        description: Optional[str] | NotGiven = NOT_GIVEN,
-        name: str | NotGiven = NOT_GIVEN,
-        type: Literal["webhook", "email", "email_group"] | NotGiven = NOT_GIVEN,
+        config: object | Omit = omit,
+        description: Optional[str] | Omit = omit,
+        name: str | Omit = omit,
+        type: Literal["webhook", "email", "email_group"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointCreateResponse:
         """
         Create a new webhook, email forward, or email group endpoint for processing
@@ -102,7 +102,7 @@ class EndpointsResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointRetrieveResponse:
         """
         Get detailed information about a specific endpoint including delivery
@@ -133,17 +133,17 @@ class EndpointsResource(SyncAPIResource):
         self,
         path_id: str,
         *,
-        body_id: str | NotGiven = NOT_GIVEN,
-        config: object | NotGiven = NOT_GIVEN,
-        description: Optional[str] | NotGiven = NOT_GIVEN,
-        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
-        name: Optional[str] | NotGiven = NOT_GIVEN,
+        body_id: str | Omit = omit,
+        config: object | Omit = omit,
+        description: Optional[str] | Omit = omit,
+        is_active: Optional[bool] | Omit = omit,
+        name: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointUpdateResponse:
         """Update an existing endpoint's configuration, status, or properties.
 
@@ -186,17 +186,17 @@ class EndpointsResource(SyncAPIResource):
     def list(
         self,
         *,
-        active: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
-        sort_by: Literal["newest", "oldest"] | NotGiven = NOT_GIVEN,
-        type: Literal["webhook", "email", "email_group"] | NotGiven = NOT_GIVEN,
+        active: Literal["true", "false"] | Omit = omit,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
+        sort_by: Literal["newest", "oldest"] | Omit = omit,
+        type: Literal["webhook", "email", "email_group"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointListResponse:
         """
         Retrieve all endpoints for the authenticated user with filtering, sorting, and
@@ -241,7 +241,7 @@ class EndpointsResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointDeleteResponse:
         """
         Permanently delete an endpoint and handle cleanup of associated resources (email
@@ -272,14 +272,14 @@ class EndpointsResource(SyncAPIResource):
         self,
         path_id: str,
         *,
-        body_id: str | NotGiven = NOT_GIVEN,
-        webhook_format: Optional[Literal["inbound", "discord", "slack"]] | NotGiven = NOT_GIVEN,
+        body_id: str | Omit = omit,
+        webhook_format: Optional[Literal["inbound", "discord", "slack"]] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointTestResponse:
         """Send a test payload to an endpoint to verify it's working correctly.
 
@@ -342,16 +342,16 @@ class AsyncEndpointsResource(AsyncAPIResource):
     async def create(
         self,
         *,
-        config: object | NotGiven = NOT_GIVEN,
-        description: Optional[str] | NotGiven = NOT_GIVEN,
-        name: str | NotGiven = NOT_GIVEN,
-        type: Literal["webhook", "email", "email_group"] | NotGiven = NOT_GIVEN,
+        config: object | Omit = omit,
+        description: Optional[str] | Omit = omit,
+        name: str | Omit = omit,
+        type: Literal["webhook", "email", "email_group"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointCreateResponse:
         """
         Create a new webhook, email forward, or email group endpoint for processing
@@ -392,7 +392,7 @@ class AsyncEndpointsResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointRetrieveResponse:
         """
         Get detailed information about a specific endpoint including delivery
@@ -423,17 +423,17 @@ class AsyncEndpointsResource(AsyncAPIResource):
         self,
         path_id: str,
         *,
-        body_id: str | NotGiven = NOT_GIVEN,
-        config: object | NotGiven = NOT_GIVEN,
-        description: Optional[str] | NotGiven = NOT_GIVEN,
-        is_active: Optional[bool] | NotGiven = NOT_GIVEN,
-        name: Optional[str] | NotGiven = NOT_GIVEN,
+        body_id: str | Omit = omit,
+        config: object | Omit = omit,
+        description: Optional[str] | Omit = omit,
+        is_active: Optional[bool] | Omit = omit,
+        name: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointUpdateResponse:
         """Update an existing endpoint's configuration, status, or properties.
 
@@ -476,17 +476,17 @@ class AsyncEndpointsResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        active: Literal["true", "false"] | NotGiven = NOT_GIVEN,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
-        sort_by: Literal["newest", "oldest"] | NotGiven = NOT_GIVEN,
-        type: Literal["webhook", "email", "email_group"] | NotGiven = NOT_GIVEN,
+        active: Literal["true", "false"] | Omit = omit,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
+        sort_by: Literal["newest", "oldest"] | Omit = omit,
+        type: Literal["webhook", "email", "email_group"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointListResponse:
         """
         Retrieve all endpoints for the authenticated user with filtering, sorting, and
@@ -531,7 +531,7 @@ class AsyncEndpointsResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointDeleteResponse:
         """
         Permanently delete an endpoint and handle cleanup of associated resources (email
@@ -562,14 +562,14 @@ class AsyncEndpointsResource(AsyncAPIResource):
         self,
         path_id: str,
         *,
-        body_id: str | NotGiven = NOT_GIVEN,
-        webhook_format: Optional[Literal["inbound", "discord", "slack"]] | NotGiven = NOT_GIVEN,
+        body_id: str | Omit = omit,
+        webhook_format: Optional[Literal["inbound", "discord", "slack"]] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> EndpointTestResponse:
         """Send a test payload to an endpoint to verify it's working correctly.
 
