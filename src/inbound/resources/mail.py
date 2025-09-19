@@ -14,7 +14,7 @@ from ..types import (
     mail_bulk_update_params,
     mail_get_thread_counts_params,
 )
-from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven, SequenceNotStr
+from .._types import Body, Omit, Query, Headers, NotGiven, SequenceNotStr, omit, not_given
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
@@ -65,7 +65,7 @@ class MailResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailRetrieveResponse:
         """
         Retrieve detailed information about a specific received email including content,
@@ -96,14 +96,14 @@ class MailResource(SyncAPIResource):
         self,
         id: str,
         *,
-        is_archived: Optional[bool] | NotGiven = NOT_GIVEN,
-        is_read: Optional[bool] | NotGiven = NOT_GIVEN,
+        is_archived: Optional[bool] | Omit = omit,
+        is_read: Optional[bool] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailUpdateResponse:
         """
         Update an email's read status, archive status, or other properties.
@@ -139,21 +139,21 @@ class MailResource(SyncAPIResource):
     def list(
         self,
         *,
-        domain: str | NotGiven = NOT_GIVEN,
-        email_address: str | NotGiven = NOT_GIVEN,
-        email_id: str | NotGiven = NOT_GIVEN,
-        include_archived: bool | NotGiven = NOT_GIVEN,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
-        search: str | NotGiven = NOT_GIVEN,
-        status: Literal["all", "processed", "failed"] | NotGiven = NOT_GIVEN,
-        time_range: Literal["24h", "7d", "30d", "90d"] | NotGiven = NOT_GIVEN,
+        domain: str | Omit = omit,
+        email_address: str | Omit = omit,
+        email_id: str | Omit = omit,
+        include_archived: bool | Omit = omit,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
+        search: str | Omit = omit,
+        status: Literal["all", "processed", "failed"] | Omit = omit,
+        time_range: Literal["24h", "7d", "30d", "90d"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailListResponse:
         """
         Retrieve all received emails for the authenticated user with filtering, search,
@@ -196,14 +196,14 @@ class MailResource(SyncAPIResource):
     def bulk_update(
         self,
         *,
-        email_ids: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
-        updates: mail_bulk_update_params.Updates | NotGiven = NOT_GIVEN,
+        email_ids: SequenceNotStr[str] | Omit = omit,
+        updates: mail_bulk_update_params.Updates | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailBulkUpdateResponse:
         """Update multiple emails at once (mark as read, archive, etc.).
 
@@ -243,7 +243,7 @@ class MailResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailGetThreadResponse:
         """Retrieve all emails in a conversation thread for a given email ID.
 
@@ -274,13 +274,13 @@ class MailResource(SyncAPIResource):
     def get_thread_counts(
         self,
         *,
-        email_ids: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
+        email_ids: SequenceNotStr[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailGetThreadCountsResponse:
         """Calculate conversation thread sizes for multiple emails in batch.
 
@@ -308,18 +308,18 @@ class MailResource(SyncAPIResource):
     def reply(
         self,
         *,
-        attachments: Optional[Iterable[mail_reply_params.Attachment]] | NotGiven = NOT_GIVEN,
-        email_id: str | NotGiven = NOT_GIVEN,
-        html_body: Optional[str] | NotGiven = NOT_GIVEN,
-        subject: str | NotGiven = NOT_GIVEN,
-        text_body: Optional[str] | NotGiven = NOT_GIVEN,
-        to: str | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[mail_reply_params.Attachment]] | Omit = omit,
+        email_id: str | Omit = omit,
+        html_body: Optional[str] | Omit = omit,
+        subject: str | Omit = omit,
+        text_body: Optional[str] | Omit = omit,
+        to: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailReplyResponse:
         """Create a reply to a received email.
 
@@ -384,7 +384,7 @@ class AsyncMailResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailRetrieveResponse:
         """
         Retrieve detailed information about a specific received email including content,
@@ -415,14 +415,14 @@ class AsyncMailResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        is_archived: Optional[bool] | NotGiven = NOT_GIVEN,
-        is_read: Optional[bool] | NotGiven = NOT_GIVEN,
+        is_archived: Optional[bool] | Omit = omit,
+        is_read: Optional[bool] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailUpdateResponse:
         """
         Update an email's read status, archive status, or other properties.
@@ -458,21 +458,21 @@ class AsyncMailResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        domain: str | NotGiven = NOT_GIVEN,
-        email_address: str | NotGiven = NOT_GIVEN,
-        email_id: str | NotGiven = NOT_GIVEN,
-        include_archived: bool | NotGiven = NOT_GIVEN,
-        limit: float | NotGiven = NOT_GIVEN,
-        offset: float | NotGiven = NOT_GIVEN,
-        search: str | NotGiven = NOT_GIVEN,
-        status: Literal["all", "processed", "failed"] | NotGiven = NOT_GIVEN,
-        time_range: Literal["24h", "7d", "30d", "90d"] | NotGiven = NOT_GIVEN,
+        domain: str | Omit = omit,
+        email_address: str | Omit = omit,
+        email_id: str | Omit = omit,
+        include_archived: bool | Omit = omit,
+        limit: float | Omit = omit,
+        offset: float | Omit = omit,
+        search: str | Omit = omit,
+        status: Literal["all", "processed", "failed"] | Omit = omit,
+        time_range: Literal["24h", "7d", "30d", "90d"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailListResponse:
         """
         Retrieve all received emails for the authenticated user with filtering, search,
@@ -515,14 +515,14 @@ class AsyncMailResource(AsyncAPIResource):
     async def bulk_update(
         self,
         *,
-        email_ids: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
-        updates: mail_bulk_update_params.Updates | NotGiven = NOT_GIVEN,
+        email_ids: SequenceNotStr[str] | Omit = omit,
+        updates: mail_bulk_update_params.Updates | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailBulkUpdateResponse:
         """Update multiple emails at once (mark as read, archive, etc.).
 
@@ -562,7 +562,7 @@ class AsyncMailResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailGetThreadResponse:
         """Retrieve all emails in a conversation thread for a given email ID.
 
@@ -593,13 +593,13 @@ class AsyncMailResource(AsyncAPIResource):
     async def get_thread_counts(
         self,
         *,
-        email_ids: SequenceNotStr[str] | NotGiven = NOT_GIVEN,
+        email_ids: SequenceNotStr[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailGetThreadCountsResponse:
         """Calculate conversation thread sizes for multiple emails in batch.
 
@@ -629,18 +629,18 @@ class AsyncMailResource(AsyncAPIResource):
     async def reply(
         self,
         *,
-        attachments: Optional[Iterable[mail_reply_params.Attachment]] | NotGiven = NOT_GIVEN,
-        email_id: str | NotGiven = NOT_GIVEN,
-        html_body: Optional[str] | NotGiven = NOT_GIVEN,
-        subject: str | NotGiven = NOT_GIVEN,
-        text_body: Optional[str] | NotGiven = NOT_GIVEN,
-        to: str | NotGiven = NOT_GIVEN,
+        attachments: Optional[Iterable[mail_reply_params.Attachment]] | Omit = omit,
+        email_id: str | Omit = omit,
+        html_body: Optional[str] | Omit = omit,
+        subject: str | Omit = omit,
+        text_body: Optional[str] | Omit = omit,
+        to: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> MailReplyResponse:
         """Create a reply to a received email.
 

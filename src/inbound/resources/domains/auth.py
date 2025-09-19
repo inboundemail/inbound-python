@@ -6,7 +6,7 @@ from typing import Optional
 
 import httpx
 
-from ..._types import NOT_GIVEN, Body, Query, Headers, NotGiven
+from ..._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
 from ..._utils import maybe_transform, async_maybe_transform
 from ..._compat import cached_property
 from ..._resource import SyncAPIResource, AsyncAPIResource
@@ -48,15 +48,15 @@ class AuthResource(SyncAPIResource):
         self,
         id: str,
         *,
-        generate_dmarc: Optional[bool] | NotGiven = NOT_GIVEN,
-        generate_spf: Optional[bool] | NotGiven = NOT_GIVEN,
-        mail_from_domain: Optional[str] | NotGiven = NOT_GIVEN,
+        generate_dmarc: Optional[bool] | Omit = omit,
+        generate_spf: Optional[bool] | Omit = omit,
+        mail_from_domain: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> AuthInitializeResponse:
         """
         Initialize AWS SES authentication for a domain including DKIM, MAIL FROM domain,
@@ -95,13 +95,13 @@ class AuthResource(SyncAPIResource):
         self,
         id: str,
         *,
-        body: object | NotGiven = NOT_GIVEN,
+        body: object | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> AuthVerifyResponse:
         """Verify DNS records and check AWS SES authentication status for a domain.
 
@@ -155,15 +155,15 @@ class AsyncAuthResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        generate_dmarc: Optional[bool] | NotGiven = NOT_GIVEN,
-        generate_spf: Optional[bool] | NotGiven = NOT_GIVEN,
-        mail_from_domain: Optional[str] | NotGiven = NOT_GIVEN,
+        generate_dmarc: Optional[bool] | Omit = omit,
+        generate_spf: Optional[bool] | Omit = omit,
+        mail_from_domain: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> AuthInitializeResponse:
         """
         Initialize AWS SES authentication for a domain including DKIM, MAIL FROM domain,
@@ -202,13 +202,13 @@ class AsyncAuthResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        body: object | NotGiven = NOT_GIVEN,
+        body: object | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> AuthVerifyResponse:
         """Verify DNS records and check AWS SES authentication status for a domain.
 
