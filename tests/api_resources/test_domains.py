@@ -156,7 +156,7 @@ class TestDomains:
     @parametrize
     def test_method_delete(self, client: Inbound) -> None:
         domain = client.domains.delete(
-            "id",
+            "123",
         )
         assert_matches_type(DomainDeleteResponse, domain, path=["response"])
 
@@ -164,7 +164,7 @@ class TestDomains:
     @parametrize
     def test_raw_response_delete(self, client: Inbound) -> None:
         response = client.domains.with_raw_response.delete(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -176,7 +176,7 @@ class TestDomains:
     @parametrize
     def test_streaming_response_delete(self, client: Inbound) -> None:
         with client.domains.with_streaming_response.delete(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -198,7 +198,7 @@ class TestDomains:
     @parametrize
     def test_method_retrieve_dns_records(self, client: Inbound) -> None:
         domain = client.domains.retrieve_dns_records(
-            "id",
+            "123",
         )
         assert_matches_type(DomainRetrieveDNSRecordsResponse, domain, path=["response"])
 
@@ -206,7 +206,7 @@ class TestDomains:
     @parametrize
     def test_raw_response_retrieve_dns_records(self, client: Inbound) -> None:
         response = client.domains.with_raw_response.retrieve_dns_records(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -218,7 +218,7 @@ class TestDomains:
     @parametrize
     def test_streaming_response_retrieve_dns_records(self, client: Inbound) -> None:
         with client.domains.with_streaming_response.retrieve_dns_records(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -476,7 +476,7 @@ class TestAsyncDomains:
     @parametrize
     async def test_method_delete(self, async_client: AsyncInbound) -> None:
         domain = await async_client.domains.delete(
-            "id",
+            "123",
         )
         assert_matches_type(DomainDeleteResponse, domain, path=["response"])
 
@@ -484,7 +484,7 @@ class TestAsyncDomains:
     @parametrize
     async def test_raw_response_delete(self, async_client: AsyncInbound) -> None:
         response = await async_client.domains.with_raw_response.delete(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -496,7 +496,7 @@ class TestAsyncDomains:
     @parametrize
     async def test_streaming_response_delete(self, async_client: AsyncInbound) -> None:
         async with async_client.domains.with_streaming_response.delete(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -518,7 +518,7 @@ class TestAsyncDomains:
     @parametrize
     async def test_method_retrieve_dns_records(self, async_client: AsyncInbound) -> None:
         domain = await async_client.domains.retrieve_dns_records(
-            "id",
+            "123",
         )
         assert_matches_type(DomainRetrieveDNSRecordsResponse, domain, path=["response"])
 
@@ -526,7 +526,7 @@ class TestAsyncDomains:
     @parametrize
     async def test_raw_response_retrieve_dns_records(self, async_client: AsyncInbound) -> None:
         response = await async_client.domains.with_raw_response.retrieve_dns_records(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -538,7 +538,7 @@ class TestAsyncDomains:
     @parametrize
     async def test_streaming_response_retrieve_dns_records(self, async_client: AsyncInbound) -> None:
         async with async_client.domains.with_streaming_response.retrieve_dns_records(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
