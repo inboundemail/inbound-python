@@ -67,7 +67,7 @@ class TestEndpoints:
     @parametrize
     def test_method_retrieve(self, client: Inbound) -> None:
         endpoint = client.endpoints.retrieve(
-            "id",
+            "123",
         )
         assert_matches_type(EndpointRetrieveResponse, endpoint, path=["response"])
 
@@ -75,7 +75,7 @@ class TestEndpoints:
     @parametrize
     def test_raw_response_retrieve(self, client: Inbound) -> None:
         response = client.endpoints.with_raw_response.retrieve(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -87,7 +87,7 @@ class TestEndpoints:
     @parametrize
     def test_streaming_response_retrieve(self, client: Inbound) -> None:
         with client.endpoints.with_streaming_response.retrieve(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -204,7 +204,7 @@ class TestEndpoints:
     @parametrize
     def test_method_delete(self, client: Inbound) -> None:
         endpoint = client.endpoints.delete(
-            "id",
+            "123",
         )
         assert_matches_type(EndpointDeleteResponse, endpoint, path=["response"])
 
@@ -212,7 +212,7 @@ class TestEndpoints:
     @parametrize
     def test_raw_response_delete(self, client: Inbound) -> None:
         response = client.endpoints.with_raw_response.delete(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -224,7 +224,7 @@ class TestEndpoints:
     @parametrize
     def test_streaming_response_delete(self, client: Inbound) -> None:
         with client.endpoints.with_streaming_response.delete(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -343,7 +343,7 @@ class TestAsyncEndpoints:
     @parametrize
     async def test_method_retrieve(self, async_client: AsyncInbound) -> None:
         endpoint = await async_client.endpoints.retrieve(
-            "id",
+            "123",
         )
         assert_matches_type(EndpointRetrieveResponse, endpoint, path=["response"])
 
@@ -351,7 +351,7 @@ class TestAsyncEndpoints:
     @parametrize
     async def test_raw_response_retrieve(self, async_client: AsyncInbound) -> None:
         response = await async_client.endpoints.with_raw_response.retrieve(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -363,7 +363,7 @@ class TestAsyncEndpoints:
     @parametrize
     async def test_streaming_response_retrieve(self, async_client: AsyncInbound) -> None:
         async with async_client.endpoints.with_streaming_response.retrieve(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -480,7 +480,7 @@ class TestAsyncEndpoints:
     @parametrize
     async def test_method_delete(self, async_client: AsyncInbound) -> None:
         endpoint = await async_client.endpoints.delete(
-            "id",
+            "123",
         )
         assert_matches_type(EndpointDeleteResponse, endpoint, path=["response"])
 
@@ -488,7 +488,7 @@ class TestAsyncEndpoints:
     @parametrize
     async def test_raw_response_delete(self, async_client: AsyncInbound) -> None:
         response = await async_client.endpoints.with_raw_response.delete(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -500,7 +500,7 @@ class TestAsyncEndpoints:
     @parametrize
     async def test_streaming_response_delete(self, async_client: AsyncInbound) -> None:
         async with async_client.endpoints.with_streaming_response.delete(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"

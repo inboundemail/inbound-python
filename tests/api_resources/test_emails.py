@@ -25,7 +25,7 @@ class TestEmails:
     @parametrize
     def test_method_retrieve(self, client: Inbound) -> None:
         email = client.emails.retrieve(
-            "id",
+            "123",
         )
         assert_matches_type(EmailRetrieveResponse, email, path=["response"])
 
@@ -33,7 +33,7 @@ class TestEmails:
     @parametrize
     def test_raw_response_retrieve(self, client: Inbound) -> None:
         response = client.emails.with_raw_response.retrieve(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -45,7 +45,7 @@ class TestEmails:
     @parametrize
     def test_streaming_response_retrieve(self, client: Inbound) -> None:
         with client.emails.with_streaming_response.retrieve(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -214,7 +214,7 @@ class TestAsyncEmails:
     @parametrize
     async def test_method_retrieve(self, async_client: AsyncInbound) -> None:
         email = await async_client.emails.retrieve(
-            "id",
+            "123",
         )
         assert_matches_type(EmailRetrieveResponse, email, path=["response"])
 
@@ -222,7 +222,7 @@ class TestAsyncEmails:
     @parametrize
     async def test_raw_response_retrieve(self, async_client: AsyncInbound) -> None:
         response = await async_client.emails.with_raw_response.retrieve(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -234,7 +234,7 @@ class TestAsyncEmails:
     @parametrize
     async def test_streaming_response_retrieve(self, async_client: AsyncInbound) -> None:
         async with async_client.emails.with_streaming_response.retrieve(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"

@@ -67,7 +67,7 @@ class TestEmailAddresses:
     @parametrize
     def test_method_retrieve(self, client: Inbound) -> None:
         email_address = client.email_addresses.retrieve(
-            "id",
+            "123",
         )
         assert_matches_type(EmailAddressRetrieveResponse, email_address, path=["response"])
 
@@ -75,7 +75,7 @@ class TestEmailAddresses:
     @parametrize
     def test_raw_response_retrieve(self, client: Inbound) -> None:
         response = client.email_addresses.with_raw_response.retrieve(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -87,7 +87,7 @@ class TestEmailAddresses:
     @parametrize
     def test_streaming_response_retrieve(self, client: Inbound) -> None:
         with client.email_addresses.with_streaming_response.retrieve(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -202,7 +202,7 @@ class TestEmailAddresses:
     @parametrize
     def test_method_delete(self, client: Inbound) -> None:
         email_address = client.email_addresses.delete(
-            "id",
+            "123",
         )
         assert_matches_type(EmailAddressDeleteResponse, email_address, path=["response"])
 
@@ -210,7 +210,7 @@ class TestEmailAddresses:
     @parametrize
     def test_raw_response_delete(self, client: Inbound) -> None:
         response = client.email_addresses.with_raw_response.delete(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -222,7 +222,7 @@ class TestEmailAddresses:
     @parametrize
     def test_streaming_response_delete(self, client: Inbound) -> None:
         with client.email_addresses.with_streaming_response.delete(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -290,7 +290,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_method_retrieve(self, async_client: AsyncInbound) -> None:
         email_address = await async_client.email_addresses.retrieve(
-            "id",
+            "123",
         )
         assert_matches_type(EmailAddressRetrieveResponse, email_address, path=["response"])
 
@@ -298,7 +298,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_raw_response_retrieve(self, async_client: AsyncInbound) -> None:
         response = await async_client.email_addresses.with_raw_response.retrieve(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -310,7 +310,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_streaming_response_retrieve(self, async_client: AsyncInbound) -> None:
         async with async_client.email_addresses.with_streaming_response.retrieve(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -425,7 +425,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_method_delete(self, async_client: AsyncInbound) -> None:
         email_address = await async_client.email_addresses.delete(
-            "id",
+            "123",
         )
         assert_matches_type(EmailAddressDeleteResponse, email_address, path=["response"])
 
@@ -433,7 +433,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_raw_response_delete(self, async_client: AsyncInbound) -> None:
         response = await async_client.email_addresses.with_raw_response.delete(
-            "id",
+            "123",
         )
 
         assert response.is_closed is True
@@ -445,7 +445,7 @@ class TestAsyncEmailAddresses:
     @parametrize
     async def test_streaming_response_delete(self, async_client: AsyncInbound) -> None:
         async with async_client.email_addresses.with_streaming_response.delete(
-            "id",
+            "123",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
