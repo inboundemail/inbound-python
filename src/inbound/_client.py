@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, Mapping, cast
-from typing_extensions import Self, Literal, override
+from typing import Any, Mapping
+from typing_extensions import Self, override
 
 import httpx
 
@@ -22,7 +22,6 @@ from ._types import (
 )
 from ._utils import is_given, get_async_library
 from ._version import __version__
-from .resources import mail, endpoints, onboarding, email_addresses
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
 from ._exceptions import APIStatusError
 from ._base_client import (
@@ -30,48 +29,24 @@ from ._base_client import (
     SyncAPIClient,
     AsyncAPIClient,
 )
-from .resources.emails import emails
-from .resources.domains import domains
+from .resources.v2 import v2
 
-__all__ = [
-    "ENVIRONMENTS",
-    "Timeout",
-    "Transport",
-    "ProxiesTypes",
-    "RequestOptions",
-    "Inbound",
-    "AsyncInbound",
-    "Client",
-    "AsyncClient",
-]
-
-ENVIRONMENTS: Dict[str, str] = {
-    "production": "https://inbound.new/api/v2",
-    "environment_1": "http://localhost:3000/api/v2",
-}
+__all__ = ["Timeout", "Transport", "ProxiesTypes", "RequestOptions", "Inbound", "AsyncInbound", "Client", "AsyncClient"]
 
 
 class Inbound(SyncAPIClient):
-    domains: domains.DomainsResource
-    email_addresses: email_addresses.EmailAddressesResource
-    emails: emails.EmailsResource
-    endpoints: endpoints.EndpointsResource
-    mail: mail.MailResource
-    onboarding: onboarding.OnboardingResource
+    v2: v2.V2Resource
     with_raw_response: InboundWithRawResponse
     with_streaming_response: InboundWithStreamedResponse
 
     # client options
     api_key: str | None
 
-    _environment: Literal["production", "environment_1"] | NotGiven
-
     def __init__(
         self,
         *,
         api_key: str | None = None,
-        environment: Literal["production", "environment_1"] | NotGiven = not_given,
-        base_url: str | httpx.URL | None | NotGiven = not_given,
+        base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         max_retries: int = DEFAULT_MAX_RETRIES,
         default_headers: Mapping[str, str] | None = None,
@@ -98,31 +73,10 @@ class Inbound(SyncAPIClient):
             api_key = os.environ.get("INBOUND_API_KEY")
         self.api_key = api_key
 
-        self._environment = environment
-
-        base_url_env = os.environ.get("INBOUND_BASE_URL")
-        if is_given(base_url) and base_url is not None:
-            # cast required because mypy doesn't understand the type narrowing
-            base_url = cast("str | httpx.URL", base_url)  # pyright: ignore[reportUnnecessaryCast]
-        elif is_given(environment):
-            if base_url_env and base_url is not None:
-                raise ValueError(
-                    "Ambiguous URL; The `INBOUND_BASE_URL` env var and the `environment` argument are given. If you want to use the environment, you must pass base_url=None",
-                )
-
-            try:
-                base_url = ENVIRONMENTS[environment]
-            except KeyError as exc:
-                raise ValueError(f"Unknown environment: {environment}") from exc
-        elif base_url_env is not None:
-            base_url = base_url_env
-        else:
-            self._environment = environment = "production"
-
-            try:
-                base_url = ENVIRONMENTS[environment]
-            except KeyError as exc:
-                raise ValueError(f"Unknown environment: {environment}") from exc
+        if base_url is None:
+            base_url = os.environ.get("INBOUND_BASE_URL")
+        if base_url is None:
+            base_url = f"https://api.example.com"
 
         super().__init__(
             version=__version__,
@@ -135,12 +89,7 @@ class Inbound(SyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.domains = domains.DomainsResource(self)
-        self.email_addresses = email_addresses.EmailAddressesResource(self)
-        self.emails = emails.EmailsResource(self)
-        self.endpoints = endpoints.EndpointsResource(self)
-        self.mail = mail.MailResource(self)
-        self.onboarding = onboarding.OnboardingResource(self)
+        self.v2 = v2.V2Resource(self)
         self.with_raw_response = InboundWithRawResponse(self)
         self.with_streaming_response = InboundWithStreamedResponse(self)
 
@@ -155,7 +104,7 @@ class Inbound(SyncAPIClient):
         api_key = self.api_key
         if api_key is None:
             return {}
-        return {"Authorization": api_key}
+        return {"Authorization": f"Bearer {api_key}"}
 
     @property
     @override
@@ -181,7 +130,6 @@ class Inbound(SyncAPIClient):
         self,
         *,
         api_key: str | None = None,
-        environment: Literal["production", "environment_1"] | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         http_client: httpx.Client | None = None,
@@ -217,7 +165,6 @@ class Inbound(SyncAPIClient):
         return self.__class__(
             api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
-            environment=environment or self._environment,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
             http_client=http_client,
             max_retries=max_retries if is_given(max_retries) else self.max_retries,
@@ -265,26 +212,18 @@ class Inbound(SyncAPIClient):
 
 
 class AsyncInbound(AsyncAPIClient):
-    domains: domains.AsyncDomainsResource
-    email_addresses: email_addresses.AsyncEmailAddressesResource
-    emails: emails.AsyncEmailsResource
-    endpoints: endpoints.AsyncEndpointsResource
-    mail: mail.AsyncMailResource
-    onboarding: onboarding.AsyncOnboardingResource
+    v2: v2.AsyncV2Resource
     with_raw_response: AsyncInboundWithRawResponse
     with_streaming_response: AsyncInboundWithStreamedResponse
 
     # client options
     api_key: str | None
 
-    _environment: Literal["production", "environment_1"] | NotGiven
-
     def __init__(
         self,
         *,
         api_key: str | None = None,
-        environment: Literal["production", "environment_1"] | NotGiven = not_given,
-        base_url: str | httpx.URL | None | NotGiven = not_given,
+        base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         max_retries: int = DEFAULT_MAX_RETRIES,
         default_headers: Mapping[str, str] | None = None,
@@ -311,31 +250,10 @@ class AsyncInbound(AsyncAPIClient):
             api_key = os.environ.get("INBOUND_API_KEY")
         self.api_key = api_key
 
-        self._environment = environment
-
-        base_url_env = os.environ.get("INBOUND_BASE_URL")
-        if is_given(base_url) and base_url is not None:
-            # cast required because mypy doesn't understand the type narrowing
-            base_url = cast("str | httpx.URL", base_url)  # pyright: ignore[reportUnnecessaryCast]
-        elif is_given(environment):
-            if base_url_env and base_url is not None:
-                raise ValueError(
-                    "Ambiguous URL; The `INBOUND_BASE_URL` env var and the `environment` argument are given. If you want to use the environment, you must pass base_url=None",
-                )
-
-            try:
-                base_url = ENVIRONMENTS[environment]
-            except KeyError as exc:
-                raise ValueError(f"Unknown environment: {environment}") from exc
-        elif base_url_env is not None:
-            base_url = base_url_env
-        else:
-            self._environment = environment = "production"
-
-            try:
-                base_url = ENVIRONMENTS[environment]
-            except KeyError as exc:
-                raise ValueError(f"Unknown environment: {environment}") from exc
+        if base_url is None:
+            base_url = os.environ.get("INBOUND_BASE_URL")
+        if base_url is None:
+            base_url = f"https://api.example.com"
 
         super().__init__(
             version=__version__,
@@ -348,12 +266,7 @@ class AsyncInbound(AsyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.domains = domains.AsyncDomainsResource(self)
-        self.email_addresses = email_addresses.AsyncEmailAddressesResource(self)
-        self.emails = emails.AsyncEmailsResource(self)
-        self.endpoints = endpoints.AsyncEndpointsResource(self)
-        self.mail = mail.AsyncMailResource(self)
-        self.onboarding = onboarding.AsyncOnboardingResource(self)
+        self.v2 = v2.AsyncV2Resource(self)
         self.with_raw_response = AsyncInboundWithRawResponse(self)
         self.with_streaming_response = AsyncInboundWithStreamedResponse(self)
 
@@ -368,7 +281,7 @@ class AsyncInbound(AsyncAPIClient):
         api_key = self.api_key
         if api_key is None:
             return {}
-        return {"Authorization": api_key}
+        return {"Authorization": f"Bearer {api_key}"}
 
     @property
     @override
@@ -394,7 +307,6 @@ class AsyncInbound(AsyncAPIClient):
         self,
         *,
         api_key: str | None = None,
-        environment: Literal["production", "environment_1"] | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         http_client: httpx.AsyncClient | None = None,
@@ -430,7 +342,6 @@ class AsyncInbound(AsyncAPIClient):
         return self.__class__(
             api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
-            environment=environment or self._environment,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
             http_client=http_client,
             max_retries=max_retries if is_given(max_retries) else self.max_retries,
@@ -479,42 +390,22 @@ class AsyncInbound(AsyncAPIClient):
 
 class InboundWithRawResponse:
     def __init__(self, client: Inbound) -> None:
-        self.domains = domains.DomainsResourceWithRawResponse(client.domains)
-        self.email_addresses = email_addresses.EmailAddressesResourceWithRawResponse(client.email_addresses)
-        self.emails = emails.EmailsResourceWithRawResponse(client.emails)
-        self.endpoints = endpoints.EndpointsResourceWithRawResponse(client.endpoints)
-        self.mail = mail.MailResourceWithRawResponse(client.mail)
-        self.onboarding = onboarding.OnboardingResourceWithRawResponse(client.onboarding)
+        self.v2 = v2.V2ResourceWithRawResponse(client.v2)
 
 
 class AsyncInboundWithRawResponse:
     def __init__(self, client: AsyncInbound) -> None:
-        self.domains = domains.AsyncDomainsResourceWithRawResponse(client.domains)
-        self.email_addresses = email_addresses.AsyncEmailAddressesResourceWithRawResponse(client.email_addresses)
-        self.emails = emails.AsyncEmailsResourceWithRawResponse(client.emails)
-        self.endpoints = endpoints.AsyncEndpointsResourceWithRawResponse(client.endpoints)
-        self.mail = mail.AsyncMailResourceWithRawResponse(client.mail)
-        self.onboarding = onboarding.AsyncOnboardingResourceWithRawResponse(client.onboarding)
+        self.v2 = v2.AsyncV2ResourceWithRawResponse(client.v2)
 
 
 class InboundWithStreamedResponse:
     def __init__(self, client: Inbound) -> None:
-        self.domains = domains.DomainsResourceWithStreamingResponse(client.domains)
-        self.email_addresses = email_addresses.EmailAddressesResourceWithStreamingResponse(client.email_addresses)
-        self.emails = emails.EmailsResourceWithStreamingResponse(client.emails)
-        self.endpoints = endpoints.EndpointsResourceWithStreamingResponse(client.endpoints)
-        self.mail = mail.MailResourceWithStreamingResponse(client.mail)
-        self.onboarding = onboarding.OnboardingResourceWithStreamingResponse(client.onboarding)
+        self.v2 = v2.V2ResourceWithStreamingResponse(client.v2)
 
 
 class AsyncInboundWithStreamedResponse:
     def __init__(self, client: AsyncInbound) -> None:
-        self.domains = domains.AsyncDomainsResourceWithStreamingResponse(client.domains)
-        self.email_addresses = email_addresses.AsyncEmailAddressesResourceWithStreamingResponse(client.email_addresses)
-        self.emails = emails.AsyncEmailsResourceWithStreamingResponse(client.emails)
-        self.endpoints = endpoints.AsyncEndpointsResourceWithStreamingResponse(client.endpoints)
-        self.mail = mail.AsyncMailResourceWithStreamingResponse(client.mail)
-        self.onboarding = onboarding.AsyncOnboardingResourceWithStreamingResponse(client.onboarding)
+        self.v2 = v2.AsyncV2ResourceWithStreamingResponse(client.v2)
 
 
 Client = Inbound

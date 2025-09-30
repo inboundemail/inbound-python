@@ -8,8 +8,22 @@ from .v2 import (
     V2ResourceWithStreamingResponse,
     AsyncV2ResourceWithStreamingResponse,
 )
+from .emails import (
+    EmailsResource,
+    AsyncEmailsResource,
+    EmailsResourceWithRawResponse,
+    AsyncEmailsResourceWithRawResponse,
+    EmailsResourceWithStreamingResponse,
+    AsyncEmailsResourceWithStreamingResponse,
+)
 
 __all__ = [
+    "EmailsResource",
+    "AsyncEmailsResource",
+    "EmailsResourceWithRawResponse",
+    "AsyncEmailsResourceWithRawResponse",
+    "EmailsResourceWithStreamingResponse",
+    "AsyncEmailsResourceWithStreamingResponse",
     "V2Resource",
     "AsyncV2Resource",
     "V2ResourceWithRawResponse",

@@ -11,7 +11,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 
 ## Documentation
 
-The REST API documentation can be found on [inbound.new](https://inbound.new/support). The full API of this library can be found in [api.md](api.md).
+The full API of this library can be found in [api.md](api.md).
 
 ## Installation
 
@@ -33,12 +33,13 @@ from inbound import Inbound
 
 client = Inbound(
     api_key=os.environ.get("INBOUND_API_KEY"),  # This is the default and can be omitted
-    # defaults to "production".
-    environment="environment_1",
 )
 
-domains = client.domains.list()
-print(domains.data)
+response = client.v2.emails.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
+)
+print(response.id)
 ```
 
 While you can provide an `api_key` keyword argument,
@@ -57,14 +58,15 @@ from inbound import AsyncInbound
 
 client = AsyncInbound(
     api_key=os.environ.get("INBOUND_API_KEY"),  # This is the default and can be omitted
-    # defaults to "production".
-    environment="environment_1",
 )
 
 
 async def main() -> None:
-    domains = await client.domains.list()
-    print(domains.data)
+    response = await client.v2.emails.reply(
+        id="REPLACE_ME",
+        from_="support@yourdomain.com",
+    )
+    print(response.id)
 
 
 asyncio.run(main())
@@ -96,8 +98,11 @@ async def main() -> None:
         api_key="My API Key",
         http_client=DefaultAioHttpClient(),
     ) as client:
-        domains = await client.domains.list()
-        print(domains.data)
+        response = await client.v2.emails.reply(
+            id="REPLACE_ME",
+            from_="support@yourdomain.com",
+        )
+        print(response.id)
 
 
 asyncio.run(main())
@@ -111,21 +116,6 @@ Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typ
 - Converting to a dictionary, `model.to_dict()`
 
 Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
-
-## Nested params
-
-Nested parameters are dictionaries, typed using `TypedDict`, for example:
-
-```python
-from inbound import Inbound
-
-client = Inbound()
-
-response = client.mail.bulk_update(
-    updates={},
-)
-print(response.updates)
-```
 
 ## Handling errors
 
@@ -143,7 +133,10 @@ from inbound import Inbound
 client = Inbound()
 
 try:
-    client.domains.list()
+    client.v2.emails.reply(
+        id="REPLACE_ME",
+        from_="support@yourdomain.com",
+    )
 except inbound.APIConnectionError as e:
     print("The server could not be reached")
     print(e.__cause__)  # an underlying Exception, likely raised within httpx.
@@ -186,7 +179,10 @@ client = Inbound(
 )
 
 # Or, configure per-request:
-client.with_options(max_retries=5).domains.list()
+client.with_options(max_retries=5).v2.emails.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
+)
 ```
 
 ### Timeouts
@@ -209,7 +205,10 @@ client = Inbound(
 )
 
 # Override per-request:
-client.with_options(timeout=5.0).domains.list()
+client.with_options(timeout=5.0).v2.emails.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
+)
 ```
 
 On timeout, an `APITimeoutError` is thrown.
@@ -250,11 +249,14 @@ The "raw" Response object can be accessed by prefixing `.with_raw_response.` to 
 from inbound import Inbound
 
 client = Inbound()
-response = client.domains.with_raw_response.list()
+response = client.v2.emails.with_raw_response.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
+)
 print(response.headers.get('X-My-Header'))
 
-domain = response.parse()  # get the object that `domains.list()` would have returned
-print(domain.data)
+email = response.parse()  # get the object that `v2.emails.reply()` would have returned
+print(email.id)
 ```
 
 These methods return an [`APIResponse`](https://github.com/stainless-sdks/inbound-python/tree/main/src/inbound/_response.py) object.
@@ -268,7 +270,10 @@ The above interface eagerly reads the full response body when you make the reque
 To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
 
 ```python
-with client.domains.with_streaming_response.list() as response:
+with client.v2.emails.with_streaming_response.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
+) as response:
     print(response.headers.get("X-My-Header"))
 
     for line in response.iter_lines():
