@@ -4,8 +4,8 @@ from typing import Sequence
 
 import pytest
 
-from inbound._types import FileTypes
-from inbound._utils import extract_files
+from inboundemail._types import FileTypes
+from inboundemail._utils import extract_files
 
 
 def test_removes_files_from_input() -> None:

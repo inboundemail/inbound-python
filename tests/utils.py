@@ -8,8 +8,8 @@ from typing import Any, TypeVar, Iterator, Sequence, cast
 from datetime import date, datetime
 from typing_extensions import Literal, get_args, get_origin, assert_type
 
-from inbound._types import Omit, NoneType
-from inbound._utils import (
+from inboundemail._types import Omit, NoneType
+from inboundemail._utils import (
     is_dict,
     is_list,
     is_list_type,
@@ -19,8 +19,8 @@ from inbound._utils import (
     is_annotated_type,
     is_type_alias_type,
 )
-from inbound._compat import PYDANTIC_V1, field_outer_type, get_model_fields
-from inbound._models import BaseModel
+from inboundemail._compat import PYDANTIC_V1, field_outer_type, get_model_fields
+from inboundemail._models import BaseModel
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 

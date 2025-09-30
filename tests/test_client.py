@@ -18,12 +18,12 @@ import pytest
 from respx import MockRouter
 from pydantic import ValidationError
 
-from inbound import Inbound, AsyncInbound, APIResponseValidationError
-from inbound._types import Omit
-from inbound._utils import asyncify
-from inbound._models import BaseModel, FinalRequestOptions
-from inbound._exceptions import APIStatusError, APITimeoutError, APIResponseValidationError
-from inbound._base_client import (
+from inboundemail import Inbound, AsyncInbound, APIResponseValidationError
+from inboundemail._types import Omit
+from inboundemail._utils import asyncify
+from inboundemail._models import BaseModel, FinalRequestOptions
+from inboundemail._exceptions import APIStatusError, APITimeoutError, APIResponseValidationError
+from inboundemail._base_client import (
     DEFAULT_TIMEOUT,
     HTTPX_DEFAULT_TIMEOUT,
     BaseClient,
@@ -232,10 +232,10 @@ class TestInbound:
                         # to_raw_response_wrapper leaks through the @functools.wraps() decorator.
                         #
                         # removing the decorator fixes the leak for reasons we don't understand.
-                        "inbound/_legacy_response.py",
-                        "inbound/_response.py",
+                        "inboundemail/_legacy_response.py",
+                        "inboundemail/_response.py",
                         # pydantic.BaseModel.model_dump || pydantic.BaseModel.dict leak memory for some reason.
-                        "inbound/_compat.py",
+                        "inboundemail/_compat.py",
                         # Standard library leaks we don't care about.
                         "/logging/__init__.py",
                     ]
@@ -718,7 +718,7 @@ class TestInbound:
         calculated = client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
 
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter, client: Inbound) -> None:
         respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=httpx.TimeoutException("Test timeout error"))
@@ -728,7 +728,7 @@ class TestInbound:
 
         assert _get_open_connections(self.client) == 0
 
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, client: Inbound) -> None:
         respx_mock.post("/api/v2/emails/id/reply").mock(return_value=httpx.Response(500))
@@ -738,7 +738,7 @@ class TestInbound:
         assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.parametrize("failure_mode", ["status", "exception"])
     def test_retries_taken(
@@ -769,7 +769,7 @@ class TestInbound:
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_omit_retry_count_header(
         self, client: Inbound, failures_before_success: int, respx_mock: MockRouter
@@ -794,7 +794,7 @@ class TestInbound:
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_overwrite_retry_count_header(
         self, client: Inbound, failures_before_success: int, respx_mock: MockRouter
@@ -1044,10 +1044,10 @@ class TestAsyncInbound:
                         # to_raw_response_wrapper leaks through the @functools.wraps() decorator.
                         #
                         # removing the decorator fixes the leak for reasons we don't understand.
-                        "inbound/_legacy_response.py",
-                        "inbound/_response.py",
+                        "inboundemail/_legacy_response.py",
+                        "inboundemail/_response.py",
                         # pydantic.BaseModel.model_dump || pydantic.BaseModel.dict leak memory for some reason.
-                        "inbound/_compat.py",
+                        "inboundemail/_compat.py",
                         # Standard library leaks we don't care about.
                         "/logging/__init__.py",
                     ]
@@ -1546,7 +1546,7 @@ class TestAsyncInbound:
         calculated = client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
 
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_timeout_errors_doesnt_leak(
         self, respx_mock: MockRouter, async_client: AsyncInbound
@@ -1560,7 +1560,7 @@ class TestAsyncInbound:
 
         assert _get_open_connections(self.client) == 0
 
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, async_client: AsyncInbound) -> None:
         respx_mock.post("/api/v2/emails/id/reply").mock(return_value=httpx.Response(500))
@@ -1572,7 +1572,7 @@ class TestAsyncInbound:
         assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.asyncio
     @pytest.mark.parametrize("failure_mode", ["status", "exception"])
@@ -1604,7 +1604,7 @@ class TestAsyncInbound:
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.asyncio
     async def test_omit_retry_count_header(
@@ -1630,7 +1630,7 @@ class TestAsyncInbound:
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("inboundemail._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.asyncio
     async def test_overwrite_retry_count_header(

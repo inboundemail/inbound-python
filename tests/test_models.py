@@ -7,9 +7,9 @@ import pytest
 import pydantic
 from pydantic import Field
 
-from inbound._utils import PropertyInfo
-from inbound._compat import PYDANTIC_V1, parse_obj, model_dump, model_json
-from inbound._models import BaseModel, construct_type
+from inboundemail._utils import PropertyInfo
+from inboundemail._compat import PYDANTIC_V1, parse_obj, model_dump, model_json
+from inboundemail._models import BaseModel, construct_type
 
 
 class BasicModel(BaseModel):

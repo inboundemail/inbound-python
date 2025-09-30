@@ -81,12 +81,12 @@ _setup_logging()
 # Update the __module__ attribute for exported symbols so that
 # error messages point to this module instead of the module
 # it was originally defined in, e.g.
-# inbound._exceptions.NotFoundError -> inbound.NotFoundError
+# inboundemail._exceptions.NotFoundError -> inboundemail.NotFoundError
 __locals = locals()
 for __name in __all__:
     if not __name.startswith("__"):
         try:
-            __locals[__name].__module__ = "inbound"
+            __locals[__name].__module__ = "inboundemail"
         except (TypeError, AttributeError):
             # Some of our exported symbols are builtins which we can't set attributes for.
             pass
