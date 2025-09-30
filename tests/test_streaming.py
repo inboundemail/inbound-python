@@ -5,8 +5,8 @@ from typing import Iterator, AsyncIterator
 import httpx
 import pytest
 
-from inbound import Inbound, AsyncInbound
-from inbound._streaming import Stream, AsyncStream, ServerSentEvent
+from inboundemail import Inbound, AsyncInbound
+from inboundemail._streaming import Stream, AsyncStream, ServerSentEvent
 
 
 @pytest.mark.asyncio

@@ -7,9 +7,9 @@ from typing import Any, cast
 
 import pytest
 
-from inbound import Inbound, AsyncInbound
 from tests.utils import assert_matches_type
-from inbound.types.v2 import (
+from inboundemail import Inbound, AsyncInbound
+from inboundemail.types.v2 import (
     EmailSendResponse,
     EmailReplyResponse,
     EmailResendResponse,

@@ -8,15 +8,15 @@ from typing_extensions import Required, Annotated, TypedDict
 
 import pytest
 
-from inbound._types import Base64FileInput, omit, not_given
-from inbound._utils import (
+from inboundemail._types import Base64FileInput, omit, not_given
+from inboundemail._utils import (
     PropertyInfo,
     transform as _transform,
     parse_datetime,
     async_transform as _async_transform,
 )
-from inbound._compat import PYDANTIC_V1
-from inbound._models import BaseModel
+from inboundemail._compat import PYDANTIC_V1
+from inboundemail._models import BaseModel
 
 _T = TypeVar("_T")
 
