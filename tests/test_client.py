@@ -337,7 +337,7 @@ class TestInbound:
     def test_validate_headers(self) -> None:
         client = Inbound(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
-        assert request.headers.get("Authorization") == api_key
+        assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
         with update_env(**{"INBOUND_API_KEY": Omit()}):
             client2 = Inbound(base_url=base_url, api_key=None, _strict_response_validation=True)
@@ -567,14 +567,6 @@ class TestInbound:
             client = Inbound(api_key=api_key, _strict_response_validation=True)
             assert client.base_url == "http://localhost:5000/from/env/"
 
-        # explicit environment arg requires explicitness
-        with update_env(INBOUND_BASE_URL="http://localhost:5000/from/env"):
-            with pytest.raises(ValueError, match=r"you must pass base_url=None"):
-                Inbound(api_key=api_key, _strict_response_validation=True, environment="production")
-
-            client = Inbound(base_url=None, api_key=api_key, _strict_response_validation=True, environment="production")
-            assert str(client.base_url).startswith("https://inbound.new/api/v2")
-
     @pytest.mark.parametrize(
         "client",
         [
@@ -729,20 +721,20 @@ class TestInbound:
     @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter, client: Inbound) -> None:
-        respx_mock.get("/v2/domains").mock(side_effect=httpx.TimeoutException("Test timeout error"))
+        respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
-            client.domains.with_streaming_response.list().__enter__()
+            client.v2.emails.with_streaming_response.reply(id="id", from_="support@yourdomain.com").__enter__()
 
         assert _get_open_connections(self.client) == 0
 
     @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, client: Inbound) -> None:
-        respx_mock.get("/v2/domains").mock(return_value=httpx.Response(500))
+        respx_mock.post("/api/v2/emails/id/reply").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
-            client.domains.with_streaming_response.list().__enter__()
+            client.v2.emails.with_streaming_response.reply(id="id", from_="support@yourdomain.com").__enter__()
         assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
@@ -769,9 +761,9 @@ class TestInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=retry_handler)
 
-        response = client.domains.with_raw_response.list()
+        response = client.v2.emails.with_raw_response.reply(id="id", from_="support@yourdomain.com")
 
         assert response.retries_taken == failures_before_success
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
@@ -793,9 +785,11 @@ class TestInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=retry_handler)
 
-        response = client.domains.with_raw_response.list(extra_headers={"x-stainless-retry-count": Omit()})
+        response = client.v2.emails.with_raw_response.reply(
+            id="id", from_="support@yourdomain.com", extra_headers={"x-stainless-retry-count": Omit()}
+        )
 
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
@@ -816,9 +810,11 @@ class TestInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=retry_handler)
 
-        response = client.domains.with_raw_response.list(extra_headers={"x-stainless-retry-count": "42"})
+        response = client.v2.emails.with_raw_response.reply(
+            id="id", from_="support@yourdomain.com", extra_headers={"x-stainless-retry-count": "42"}
+        )
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
 
@@ -1155,7 +1151,7 @@ class TestAsyncInbound:
     def test_validate_headers(self) -> None:
         client = AsyncInbound(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
-        assert request.headers.get("Authorization") == api_key
+        assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
         with update_env(**{"INBOUND_API_KEY": Omit()}):
             client2 = AsyncInbound(base_url=base_url, api_key=None, _strict_response_validation=True)
@@ -1387,16 +1383,6 @@ class TestAsyncInbound:
             client = AsyncInbound(api_key=api_key, _strict_response_validation=True)
             assert client.base_url == "http://localhost:5000/from/env/"
 
-        # explicit environment arg requires explicitness
-        with update_env(INBOUND_BASE_URL="http://localhost:5000/from/env"):
-            with pytest.raises(ValueError, match=r"you must pass base_url=None"):
-                AsyncInbound(api_key=api_key, _strict_response_validation=True, environment="production")
-
-            client = AsyncInbound(
-                base_url=None, api_key=api_key, _strict_response_validation=True, environment="production"
-            )
-            assert str(client.base_url).startswith("https://inbound.new/api/v2")
-
     @pytest.mark.parametrize(
         "client",
         [
@@ -1565,20 +1551,24 @@ class TestAsyncInbound:
     async def test_retrying_timeout_errors_doesnt_leak(
         self, respx_mock: MockRouter, async_client: AsyncInbound
     ) -> None:
-        respx_mock.get("/v2/domains").mock(side_effect=httpx.TimeoutException("Test timeout error"))
+        respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
-            await async_client.domains.with_streaming_response.list().__aenter__()
+            await async_client.v2.emails.with_streaming_response.reply(
+                id="id", from_="support@yourdomain.com"
+            ).__aenter__()
 
         assert _get_open_connections(self.client) == 0
 
     @mock.patch("inbound._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, async_client: AsyncInbound) -> None:
-        respx_mock.get("/v2/domains").mock(return_value=httpx.Response(500))
+        respx_mock.post("/api/v2/emails/id/reply").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
-            await async_client.domains.with_streaming_response.list().__aenter__()
+            await async_client.v2.emails.with_streaming_response.reply(
+                id="id", from_="support@yourdomain.com"
+            ).__aenter__()
         assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
@@ -1606,9 +1596,9 @@ class TestAsyncInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=retry_handler)
 
-        response = await client.domains.with_raw_response.list()
+        response = await client.v2.emails.with_raw_response.reply(id="id", from_="support@yourdomain.com")
 
         assert response.retries_taken == failures_before_success
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
@@ -1631,9 +1621,11 @@ class TestAsyncInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=retry_handler)
 
-        response = await client.domains.with_raw_response.list(extra_headers={"x-stainless-retry-count": Omit()})
+        response = await client.v2.emails.with_raw_response.reply(
+            id="id", from_="support@yourdomain.com", extra_headers={"x-stainless-retry-count": Omit()}
+        )
 
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
@@ -1655,9 +1647,11 @@ class TestAsyncInbound:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/v2/domains").mock(side_effect=retry_handler)
+        respx_mock.post("/api/v2/emails/id/reply").mock(side_effect=retry_handler)
 
-        response = await client.domains.with_raw_response.list(extra_headers={"x-stainless-retry-count": "42"})
+        response = await client.v2.emails.with_raw_response.reply(
+            id="id", from_="support@yourdomain.com", extra_headers={"x-stainless-retry-count": "42"}
+        )
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
 

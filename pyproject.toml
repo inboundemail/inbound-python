@@ -5,7 +5,7 @@ description = "The official Python library for the inbound API"
 dynamic = ["readme"]
 license = "Apache-2.0"
 authors = [
-{ name = "Inbound", email = "support@inbound.new" },
+{ name = "Inbound", email = "" },
 ]
 dependencies = [
     "httpx>=0.23.0, <1",
