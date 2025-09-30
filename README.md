@@ -1,467 +1,387 @@
-# @inboundemail/sdk
+# Inbound Python API library
 
-The official SDK for the Inbound Email API v2. This SDK provides a simple and intuitive hierarchical interface for managing email receiving, sending, domains, email addresses, and webhook endpoints.
+<!-- prettier-ignore -->
+[![PyPI version](https://img.shields.io/pypi/v/inboundemail.svg?label=pypi%20(stable))](https://pypi.org/project/inboundemail/)
 
-**Version 4.0.0** introduces a new hierarchical structure with `inbound.email.address.*` methods and consistent `{ data, error }` response patterns.
+The Inbound Python library provides convenient access to the Inbound REST API from any Python 3.8+
+application. The library includes type definitions for all request params and response fields,
+and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
+
+It is generated with [Stainless](https://www.stainless.com/).
+
+## Documentation
+
+The full API of this library can be found in [api.md](api.md).
 
 ## Installation
 
-Choose your preferred package name - both contain identical functionality:
-
-```bash
-# Full scoped name
-npm install @inboundemail/sdk
-
-# Short alias
-npm install inbnd
+```sh
+# install from PyPI
+pip install inboundemail
 ```
 
-Both packages are published simultaneously and contain the same code. Use whichever name you prefer!
+## Usage
 
-## Quick Start
+The full API of this library can be found in [api.md](api.md).
 
-Both package names work identically:
+```python
+import os
+from inboundemail import Inbound
 
-```typescript
-// Using full scoped name
-import { Inbound } from '@inboundemail/sdk'
-
-// Or using short alias  
-import { Inbound } from 'inbnd'
-
-const inbound = new Inbound(process.env.INBOUND_API_KEY!)
-
-// Send an email (with { data, error } pattern)
-const { data: email, error } = await inbound.email.send({
-  from: 'hello@yourdomain.com',
-  to: 'user@example.com',
-  subject: 'Hello World',
-  html: '<h1>Hello World</h1><p>This is your first email!</p>',
-})
-
-if (error) {
-  console.error('Failed to send email:', error)
-} else {
-  console.log('Email sent:', email.id)
-}
-```
-
-## 🏗️ Unified Email API (New in v5.0.0)
-
-The SDK now uses a unified email structure under `inbound.email.*`:
-
-```typescript
-// 📧 Received Email Management (NEW - unified under email.received)
-inbound.email.received.list()           // List received emails
-inbound.email.received.get(id)          // Get specific received email
-inbound.email.received.thread(id)       // Get email thread
-inbound.email.received.markRead(id)     // Mark as read
-inbound.email.received.archive(id)      // Archive email
-inbound.email.received.reply(params)    // Reply to received email
-
-// 📤 Sent Email Management (NEW - organized under email.sent)
-inbound.email.send(data)                // Send email immediately
-inbound.email.schedule(data)            // Schedule email
-inbound.email.sent.get(id)              // Get sent email by ID
-inbound.email.sent.reply(id, data)      // Reply to sent email
-inbound.email.sent.listScheduled()      // List scheduled emails
-inbound.email.sent.getScheduled(id)     // Get specific scheduled email
-inbound.email.sent.cancel(id)           // Cancel scheduled email
-
-// 🔄 Universal Email Access
-inbound.email.get(id)                   // Get ANY email (received or sent)
-
-// 📮 Email Address Management (nested under email)
-inbound.email.address.create(data)      // Create email address
-inbound.email.address.list()            // List email addresses
-inbound.email.address.get(id)           // Get address details
-inbound.email.address.update(id, data)  // Update address routing
-inbound.email.address.delete(id)        // Remove address
-
-// 🌐 Domain Management
-inbound.domain.create(data)             // Add new domain
-inbound.domain.list()                   // List all domains
-inbound.domain.verify(id)               // Verify domain
-inbound.domain.getDnsRecords(id)        // Get DNS records
-
-// 🔗 Endpoint Management (Webhooks & Forwarding)
-inbound.endpoint.create(data)           // Create endpoint
-inbound.endpoint.list()                 // List endpoints
-inbound.endpoint.test(id)               // Test endpoint
-```
-
-### ⚠️ Deprecated Methods
-
-The old `inbound.mail.*` methods are deprecated but still work with console warnings:
-
-```typescript
-// ❌ DEPRECATED - Will be removed in v6.0.0
-inbound.mail.list()           // Use inbound.email.received.list() instead
-inbound.mail.get(id)          // Use inbound.email.received.get() instead
-inbound.mail.markRead(id)     // Use inbound.email.received.markRead() instead
-// ... etc
-```
-
-## 📊 Response Pattern
-
-All methods now return a consistent `{ data, error }` pattern:
-
-```typescript
-// Success case
-const { data, error } = await inbound.mail.list()
-if (error) {
-  console.error('Error:', error)
-  return
-}
-console.log('Emails:', data.emails)
-
-// Or with destructuring
-const { data: emails, error: emailsError } = await inbound.mail.list()
-const { data: domains, error: domainsError } = await inbound.domain.list()
-```
-
-## Streamlined Webhook Replies
-
-The SDK includes a streamlined `reply()` method that makes it easy to reply to emails directly from webhook handlers:
-
-### Quick Setup
-
-```typescript
-// Works with either package name
-import { Inbound, type InboundWebhookPayload, isInboundWebhook } from '@inboundemail/sdk'
-// import { Inbound, type InboundWebhookPayload, isInboundWebhook } from 'inbnd'
-import { NextRequest, NextResponse } from 'next/server'
-
-const inbound = new Inbound(process.env.INBOUND_API_KEY!)
-
-export async function POST(request: NextRequest) {
-  const payload: InboundWebhookPayload = await request.json()
-  
-  if (!isInboundWebhook(payload)) {
-    return NextResponse.json({ error: 'Invalid webhook' }, { status: 400 })
-  }
-  
-  const { email } = payload
-  
-  // Reply to emails with new { data, error } pattern
-  const { data, error } = await inbound.reply(email, {
-    from: 'support@yourdomain.com',
-    text: 'Thanks for your message! We\'ll get back to you soon.'
-  })
-
-  if (error) {
-    console.error('Reply failed:', error)
-    return NextResponse.json({ error }, { status: 500 })
-  }
-
-  return NextResponse.json({ success: true, messageId: data.messageId })
-}
-```
-
-## 📮 Email Address Management
-
-The new hierarchical structure makes email address management more intuitive:
-
-```typescript
-// List all email addresses
-const { data: addresses, error } = await inbound.email.address.list()
-
-// Create a new email address
-const { data: newAddress, error: createError } = await inbound.email.address.create({
-  address: 'support@yourdomain.com',
-  domainId: 'domain-123'
-})
-
-// Update routing for an email address
-const { data: updated, error: updateError } = await inbound.email.address.update('address-123', {
-  endpointId: 'webhook-456',
-  isActive: true
-})
-
-// Delete an email address
-const { data: deleted, error: deleteError } = await inbound.email.address.delete('address-123')
-```
-
-## 🌐 Domain Management
-
-```typescript
-// Create and verify a domain
-const { data: domain, error } = await inbound.domain.create({
-  domain: 'yourdomain.com'
-})
-
-if (!error) {
-  // Get DNS records needed for verification
-  const { data: dnsRecords } = await inbound.domain.getDnsRecords(domain.id)
-  console.log('Add these DNS records:', dnsRecords)
-  
-  // Verify domain after DNS setup
-  const { data: verification } = await inbound.domain.verify(domain.id)
-}
-```
-
-## 🔗 Endpoint Management
-
-```typescript
-// Create a webhook endpoint
-const { data: webhook, error } = await inbound.endpoint.create({
-  name: 'My Webhook',
-  type: 'webhook',
-  config: {
-    url: 'https://yourapp.com/webhook',
-    timeout: 30000,
-    retryAttempts: 3
-  }
-})
-
-// Test the endpoint
-if (!error) {
-  const { data: testResult } = await inbound.endpoint.test(webhook.id)
-  console.log('Test result:', testResult)
-}
-```
-
-## 🎯 Convenience Methods
-
-```typescript
-// Quick reply to an email
-const { data, error } = await inbound.quickReply(
-  'email-123', 
-  'Thanks for your message!', 
-  'support@yourdomain.com',
-  { idempotencyKey: 'quick-reply-123' }
+client = Inbound(
+    api_key=os.environ.get("INBOUND_API_KEY"),  # This is the default and can be omitted
 )
 
-// One-step domain setup with webhook
-const { data: setup } = await inbound.setupDomain(
-  'newdomain.com',
-  'https://yourapp.com/webhook'
+response = client.v2.emails.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
+)
+print(response.id)
+```
+
+While you can provide an `api_key` keyword argument,
+we recommend using [python-dotenv](https://pypi.org/project/python-dotenv/)
+to add `INBOUND_API_KEY="My API Key"` to your `.env` file
+so that your API Key is not stored in source control.
+
+## Async usage
+
+Simply import `AsyncInbound` instead of `Inbound` and use `await` with each API call:
+
+```python
+import os
+import asyncio
+from inboundemail import AsyncInbound
+
+client = AsyncInbound(
+    api_key=os.environ.get("INBOUND_API_KEY"),  # This is the default and can be omitted
 )
 
-// Create email forwarder
-const { data: forwarder } = await inbound.createForwarder(
-  'info@yourdomain.com',
-  'team@yourdomain.com'
+
+async def main() -> None:
+    response = await client.v2.emails.reply(
+        id="REPLACE_ME",
+        from_="support@yourdomain.com",
+    )
+    print(response.id)
+
+
+asyncio.run(main())
+```
+
+Functionality between the synchronous and asynchronous clients is otherwise identical.
+
+### With aiohttp
+
+By default, the async client uses `httpx` for HTTP requests. However, for improved concurrency performance you may also use `aiohttp` as the HTTP backend.
+
+You can enable this by installing `aiohttp`:
+
+```sh
+# install from PyPI
+pip install inboundemail[aiohttp]
+```
+
+Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
+
+```python
+import asyncio
+from inboundemail import DefaultAioHttpClient
+from inboundemail import AsyncInbound
+
+
+async def main() -> None:
+    async with AsyncInbound(
+        api_key="My API Key",
+        http_client=DefaultAioHttpClient(),
+    ) as client:
+        response = await client.v2.emails.reply(
+            id="REPLACE_ME",
+            from_="support@yourdomain.com",
+        )
+        print(response.id)
+
+
+asyncio.run(main())
+```
+
+## Using types
+
+Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typing.html#typing.TypedDict). Responses are [Pydantic models](https://docs.pydantic.dev) which also provide helper methods for things like:
+
+- Serializing back into JSON, `model.to_json()`
+- Converting to a dictionary, `model.to_dict()`
+
+Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
+
+## Handling errors
+
+When the library is unable to connect to the API (for example, due to network connection problems or a timeout), a subclass of `inboundemail.APIConnectionError` is raised.
+
+When the API returns a non-success status code (that is, 4xx or 5xx
+response), a subclass of `inboundemail.APIStatusError` is raised, containing `status_code` and `response` properties.
+
+All errors inherit from `inboundemail.APIError`.
+
+```python
+import inboundemail
+from inboundemail import Inbound
+
+client = Inbound()
+
+try:
+    client.v2.emails.reply(
+        id="REPLACE_ME",
+        from_="support@yourdomain.com",
+    )
+except inboundemail.APIConnectionError as e:
+    print("The server could not be reached")
+    print(e.__cause__)  # an underlying Exception, likely raised within httpx.
+except inboundemail.RateLimitError as e:
+    print("A 429 status code was received; we should back off a bit.")
+except inboundemail.APIStatusError as e:
+    print("Another non-200-range status code was received")
+    print(e.status_code)
+    print(e.response)
+```
+
+Error codes are as follows:
+
+| Status Code | Error Type                 |
+| ----------- | -------------------------- |
+| 400         | `BadRequestError`          |
+| 401         | `AuthenticationError`      |
+| 403         | `PermissionDeniedError`    |
+| 404         | `NotFoundError`            |
+| 422         | `UnprocessableEntityError` |
+| 429         | `RateLimitError`           |
+| >=500       | `InternalServerError`      |
+| N/A         | `APIConnectionError`       |
+
+### Retries
+
+Certain errors are automatically retried 2 times by default, with a short exponential backoff.
+Connection errors (for example, due to a network connectivity problem), 408 Request Timeout, 409 Conflict,
+429 Rate Limit, and >=500 Internal errors are all retried by default.
+
+You can use the `max_retries` option to configure or disable retry settings:
+
+```python
+from inboundemail import Inbound
+
+# Configure the default for all requests:
+client = Inbound(
+    # default is 2
+    max_retries=0,
 )
 
-// Schedule a reminder
-const { data: reminder } = await inbound.scheduleReminder(
-  'user@example.com',
-  'Meeting Tomorrow',
-  'tomorrow at 9am',
-  'reminders@yourdomain.com',
-  { idempotencyKey: 'reminder-meeting-456' }
+# Or, configure per-request:
+client.with_options(max_retries=5).v2.emails.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
 )
 ```
 
-## 🔄 Legacy Compatibility
+### Timeouts
 
-All previous method names still work for backwards compatibility:
+By default requests time out after 1 minute. You can configure this with a `timeout` option,
+which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/timeouts/#fine-tuning-the-configuration) object:
 
-```typescript
-// These are equivalent:
-inbound.email === inbound.emails
-inbound.domain === inbound.domains  
-inbound.endpoint === inbound.endpoints
-inbound.email.address === inbound.emailAddresses
+```python
+from inboundemail import Inbound
 
-// Legacy usage still works:
-const { data } = await inbound.emails.send(emailData)
-const { data } = await inbound.domains.list()
-```
+# Configure the default for all requests:
+client = Inbound(
+    # 20 seconds (default is 1 minute)
+    timeout=20.0,
+)
 
-## 📧 Email Sending & Scheduling
+# More granular control:
+client = Inbound(
+    timeout=httpx.Timeout(60.0, read=5.0, write=10.0, connect=2.0),
+)
 
-### Send Immediate Email
-
-```typescript
-const { data: email, error } = await inbound.email.send({
-  from: 'hello@yourdomain.com',
-  to: ['user@example.com', 'admin@example.com'],
-  subject: 'Welcome!',
-  html: '<h1>Welcome to our service!</h1>',
-  text: 'Welcome to our service!',
-  attachments: [
-    {
-      filename: 'welcome.pdf',
-      path: './welcome.pdf'
-    }
-  ]
-})
-```
-
-### Schedule Email
-
-```typescript
-const { data: scheduled, error } = await inbound.email.schedule({
-  from: 'hello@yourdomain.com',
-  to: 'user@example.com',
-  subject: 'Scheduled Email',
-  html: '<p>This email was scheduled!</p>',
-  scheduled_at: 'in 1 hour',           // Natural language
-  timezone: 'America/New_York'
-})
-
-// Or with specific date
-const { data: scheduled2 } = await inbound.email.schedule({
-  from: 'hello@yourdomain.com',
-  to: 'user@example.com',
-  subject: 'New Year Email',
-  html: '<p>Happy New Year!</p>',
-  scheduled_at: '2024-01-01T00:00:00Z'  // ISO 8601
-})
-```
-
-### Manage Scheduled Emails
-
-```typescript
-// List scheduled emails
-const { data: scheduledEmails } = await inbound.email.listScheduled({
-  status: 'scheduled',
-  limit: 10
-})
-
-// Get specific scheduled email
-const { data: scheduledEmail } = await inbound.email.getScheduled('email-id')
-
-// Cancel scheduled email
-const { data: cancelled } = await inbound.email.cancel('email-id')
-```
-
-## 📬 Inbound Email Management
-
-```typescript
-// List received emails
-const { data: emails } = await inbound.mail.list({
-  limit: 50,
-  status: 'processed',
-  timeRange: '7d'
-})
-
-// Get specific email
-const { data: email } = await inbound.mail.get('email-123')
-
-// Get email thread/conversation
-const { data: thread } = await inbound.mail.thread('email-123')
-
-// Mark email as read/unread
-await inbound.mail.markRead('email-123')
-await inbound.mail.markUnread('email-123')
-
-// Archive/unarchive emails
-await inbound.mail.archive('email-123')
-await inbound.mail.unarchive('email-123')
-
-// Bulk operations
-const { data: result } = await inbound.mail.bulk(
-  ['email-1', 'email-2', 'email-3'],
-  { isRead: true }
+# Override per-request:
+client.with_options(timeout=5.0).v2.emails.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
 )
 ```
 
-## 🔧 Advanced Usage
+On timeout, an `APITimeoutError` is thrown.
 
-### React Email Components
+Note that requests that time out are [retried twice by default](#retries).
 
-```typescript
-import { EmailTemplate } from './EmailTemplate'
+## Advanced
 
-const { data, error } = await inbound.email.send({
-  from: 'hello@yourdomain.com',
-  to: 'user@example.com',
-  subject: 'Welcome!',
-  react: EmailTemplate({ name: 'John', welcomeUrl: 'https://app.com' })
-})
+### Logging
+
+We use the standard library [`logging`](https://docs.python.org/3/library/logging.html) module.
+
+You can enable logging by setting the environment variable `INBOUND_LOG` to `info`.
+
+```shell
+$ export INBOUND_LOG=info
 ```
 
-### Idempotency
+Or to `debug` for more verbose logging.
 
-Prevent duplicate emails by using idempotency keys:
+### How to tell whether `None` means `null` or missing
 
-```typescript
-const { data, error } = await inbound.email.send({
-  from: 'hello@yourdomain.com',
-  to: 'user@example.com',
-  subject: 'Important Email',
-  text: 'This email will only be sent once'
-}, {
-  idempotencyKey: 'unique-key-123'
-})
+In an API response, a field may be explicitly `null`, or missing entirely; in either case, its value is `None` in this library. You can differentiate the two cases with `.model_fields_set`:
 
-// Works with all email sending methods
-await inbound.email.schedule({
-  from: 'hello@yourdomain.com',
-  to: 'user@example.com',
-  subject: 'Scheduled Email',
-  text: 'This scheduled email is idempotent',
-  scheduled_at: 'tomorrow at 9am'
-}, {
-  idempotencyKey: 'scheduled-email-456'
-})
-
-// Also works with replies
-await inbound.email.reply('email-123', {
-  from: 'support@yourdomain.com',
-  text: 'This reply will only be sent once'
-}, {
-  idempotencyKey: 'reply-789'
-})
+```py
+if response.my_field is None:
+  if 'my_field' not in response.model_fields_set:
+    print('Got json like {}, without a "my_field" key present at all.')
+  else:
+    print('Got json like {"my_field": null}.')
 ```
 
-## 🛠️ Error Handling
+### Accessing raw response data (e.g. headers)
 
-```typescript
-const { data, error } = await inbound.email.send(emailData)
+The "raw" Response object can be accessed by prefixing `.with_raw_response.` to any HTTP method call, e.g.,
 
-if (error) {
-  // Handle different error types
-  if (error.includes('Invalid API key')) {
-    console.error('Authentication failed')
-  } else if (error.includes('Rate limit')) {
-    console.error('Rate limit exceeded')
-  } else {
-    console.error('Unknown error:', error)
-  }
-  return
-}
+```py
+from inboundemail import Inbound
 
-// Success case
-console.log('Email sent successfully:', data.id)
+client = Inbound()
+response = client.v2.emails.with_raw_response.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
+)
+print(response.headers.get('X-My-Header'))
+
+email = response.parse()  # get the object that `v2.emails.reply()` would have returned
+print(email.id)
 ```
 
-## 📚 TypeScript Support
+These methods return an [`APIResponse`](https://github.com/inboundemail/inbound-python/tree/main/src/inboundemail/_response.py) object.
 
-The SDK is fully typed with TypeScript:
+The async client returns an [`AsyncAPIResponse`](https://github.com/inboundemail/inbound-python/tree/main/src/inboundemail/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
 
-```typescript
-// Type imports work with either package name
-import type { 
-  ApiResponse,
-  PostEmailsRequest,
-  PostEmailsResponse,
-  InboundWebhookPayload 
-} from '@inboundemail/sdk'
-// } from 'inbnd'
+#### `.with_streaming_response`
 
-// Type-safe email sending
-const emailRequest: PostEmailsRequest = {
-  from: 'hello@yourdomain.com',
-  to: 'user@example.com',
-  subject: 'Typed Email',
-  html: '<p>This is type-safe!</p>'
-}
+The above interface eagerly reads the full response body when you make the request, which may not always be what you want.
 
-const response: ApiResponse<PostEmailsResponse> = await inbound.email.send(emailRequest)
+To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
+
+```python
+with client.v2.emails.with_streaming_response.reply(
+    id="REPLACE_ME",
+    from_="support@yourdomain.com",
+) as response:
+    print(response.headers.get("X-My-Header"))
+
+    for line in response.iter_lines():
+        print(line)
 ```
 
-## 🔗 Links
+The context manager is required so that the response will reliably be closed.
 
-- [API Documentation](https://docs.inbound.new)
-- [GitHub Repository](https://github.com/inboundemail/sdk)
-- NPM Packages:
-  - [@inboundemail/sdk](https://www.npmjs.com/package/@inboundemail/sdk) - Full scoped name
-  - [inbnd](https://www.npmjs.com/package/inbnd) - Short alias
+### Making custom/undocumented requests
 
-## 📄 License
+This library is typed for convenient access to the documented API.
 
-MIT License - see LICENSE file for details. 
+If you need to access undocumented endpoints, params, or response properties, the library can still be used.
+
+#### Undocumented endpoints
+
+To make requests to undocumented endpoints, you can make requests using `client.get`, `client.post`, and other
+http verbs. Options on the client will be respected (such as retries) when making this request.
+
+```py
+import httpx
+
+response = client.post(
+    "/foo",
+    cast_to=httpx.Response,
+    body={"my_param": True},
+)
+
+print(response.headers.get("x-foo"))
+```
+
+#### Undocumented request params
+
+If you want to explicitly send an extra param, you can do so with the `extra_query`, `extra_body`, and `extra_headers` request
+options.
+
+#### Undocumented response properties
+
+To access undocumented response properties, you can access the extra fields like `response.unknown_prop`. You
+can also get all the extra fields on the Pydantic model as a dict with
+[`response.model_extra`](https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel.model_extra).
+
+### Configuring the HTTP client
+
+You can directly override the [httpx client](https://www.python-httpx.org/api/#client) to customize it for your use case, including:
+
+- Support for [proxies](https://www.python-httpx.org/advanced/proxies/)
+- Custom [transports](https://www.python-httpx.org/advanced/transports/)
+- Additional [advanced](https://www.python-httpx.org/advanced/clients/) functionality
+
+```python
+import httpx
+from inboundemail import Inbound, DefaultHttpxClient
+
+client = Inbound(
+    # Or use the `INBOUND_BASE_URL` env var
+    base_url="http://my.test.server.example.com:8083",
+    http_client=DefaultHttpxClient(
+        proxy="http://my.test.proxy.example.com",
+        transport=httpx.HTTPTransport(local_address="0.0.0.0"),
+    ),
+)
+```
+
+You can also customize the client on a per-request basis by using `with_options()`:
+
+```python
+client.with_options(http_client=DefaultHttpxClient(...))
+```
+
+### Managing HTTP resources
+
+By default the library closes underlying HTTP connections whenever the client is [garbage collected](https://docs.python.org/3/reference/datamodel.html#object.__del__). You can manually close the client using the `.close()` method if desired, or with a context manager that closes when exiting.
+
+```py
+from inboundemail import Inbound
+
+with Inbound() as client:
+  # make requests here
+  ...
+
+# HTTP client is now closed
+```
+
+## Versioning
+
+This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
+
+1. Changes that only affect static types, without breaking runtime behavior.
+2. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
+3. Changes that we do not expect to impact the vast majority of users in practice.
+
+We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
+
+We are keen for your feedback; please open an [issue](https://www.github.com/inboundemail/inbound-python/issues) with questions, bugs, or suggestions.
+
+### Determining the installed version
+
+If you've upgraded to the latest version but aren't seeing any new features you were expecting then your python environment is likely still using an older version.
+
+You can determine the version that is being used at runtime with:
+
+```py
+import inboundemail
+print(inboundemail.__version__)
+```
+
+## Requirements
+
+Python 3.8 or higher.
+
+## Contributing
+
+See [the contributing documentation](./CONTRIBUTING.md).
